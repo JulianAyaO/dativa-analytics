@@ -1,3 +1,4 @@
+import { ensurePortfolioDemo } from '../../core/demo/portfolio-demo';
 import { UserRole } from '../../shared/models/user.model';
 
 export type NotificationType =
@@ -86,6 +87,7 @@ export function parseNotificationPush(raw: unknown): NotificationPush | null {
 const STORAGE_KEY = 'dativa.notifications';
 
 export function readNotifications(): AppNotification[] {
+  ensurePortfolioDemo();
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
     return [];

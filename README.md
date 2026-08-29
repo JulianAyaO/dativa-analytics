@@ -1,80 +1,64 @@
-# Nombre del Proyecto
+# **Dativa — Plataforma de analítica comercial**
 
-**Dativa — Plataforma de analítica comercial**
-
-Dativa es una aplicación full stack de analítica para equipos comerciales. Permite explorar ventas y pedidos, construir dashboards con widgets, importar CSV o Excel, configurar alertas y recibir actualizaciones en tiempo real, con control de acceso por roles.
+Una aplicación full stack de analítica para equipos comerciales: dashboards con widgets, explorador de ventas y pedidos, importación de CSV/Excel, alertas y actualizaciones en tiempo real, con acceso por roles.
 
 ## Demo
 
-`[Añadir URL de la demo en vivo]`
+**Demo en vivo:** [dativa-analytics.ayajulian-dev.workers.dev](https://dativa-analytics.ayajulian-dev.workers.dev/login)
+
+<br>
+
+<p align="center">
+  <img src="assets/demo.gif" alt="Demo de Dativa" width="720">
+</p>
+
+<p align="center">
+  <em>Dashboards, filtros, explorador e importación en una sola app. La demo pública corre en modo mock (sin API).</em>
+</p>
 
 ## Descripción general
 
-Dativa está pensada para centralizar el análisis de **Ventas** y **Pedidos** en un solo producto: dashboards, explorador tabular, importación, alertas, notificaciones y administración de usuarios.
+Dativa concentra el análisis de **Ventas** y **Pedidos**: tableros editables, un explorador tabular, importación guiada y alertas, con roles de administrador, analista y visualizador.
 
-Los analistas y administradores pueden crear y editar dashboards, aplicar filtros globales (periodo, región, categoría, producto y vendedor), profundizar en las filas desde un KPI o un ranking, exportar resultados e importar archivos con esquemas específicos por dataset. Los visualizadores consultan la información en modo de solo lectura.
-
-El frontend es el foco del portafolio: Angular 22 zoneless, Signals, un design system propio (`@dativa/ui`) y una app que funciona completa en modo mock. El backend en Spring Boot existe para autenticar, persistir y servir datos reales sobre PostgreSQL, con el mismo contrato analítico `WidgetQuery → WidgetResult`.
+El frontend es el foco del portafolio: Angular 22 zoneless con Signals y un design system propio (`@dativa/ui`). Funciona completa en mock. El backend Spring Boot replica el mismo contrato analítico sobre PostgreSQL cuando se quiere persistencia real.
 
 ## Características
 
-- **Dashboards editables:** paleta de widgets, grid con arrastre y redimensionado, persistencia de layout y configuración.
-- **Widgets analíticos:** KPI, series (línea, barras y área), circular, tabla, ranking y progreso, con `ngx-echarts`.
-- **Filtros globales:** fecha, región, categoría, producto y vendedor; todos los widgets del dashboard se actualizan juntos.
-- **Explorador de transacciones:** búsqueda, orden, paginación, columnas configurables y exportación a CSV o Excel con formato.
-- **Drill-down:** un clic en un KPI o en una barra de ranking abre el explorador conservando dataset, periodo y filtros.
-- **Importación guiada:** wizard reutilizable con esquemas separados de Ventas y Pedidos, mapeo sugerido, validación, columnas ignorables y omisión de duplicados.
-- **Tiempo real:** STOMP/WebSocket con indicador de conexión; el dashboard refresca solo los widgets afectados y el explorador avisa cuando hay datos nuevos.
-- **Alertas y notificaciones:** condiciones sobre métricas y avisos en la sesión.
-- **Roles:** Administrador, Analista y Visualizador. El visualizador puede abrir dashboards, no editarlos ni importar.
-- **Apariencia:** tema claro, oscuro o del sistema, y densidad cómoda o compacta.
-- **Administración:** gestión de usuarios y bitácora de actividad (rol ADMIN).
+- Dashboards con paleta de widgets, grid arrastrable y filtros globales
+- KPI, línea, barras, área, circular, tabla, ranking y progreso (ECharts)
+- Drill-down desde un KPI o ranking hacia el explorador, con filtros conservados
+- Explorador con búsqueda, columnas y exportación a CSV/Excel
+- Importación CSV/Excel con mapeo, validación y omisión de duplicados
+- Tiempo real (STOMP/WebSocket), alertas y notificaciones
+- JWT y roles: admin, analista y visualizador
+- Tema claro/oscuro y administración de usuarios (ADMIN)
 
 ## Screenshots
 
-Añade capturas en esta sección cuando estén disponibles.
+### Acceso y tableros
 
-```text
-[Añadir captura del login]
-[Añadir captura del editor de dashboards]
-[Añadir captura del explorador]
-[Añadir captura de la importación]
-```
+| Inicio de sesión | Dashboard |
+| :---: | :---: |
+| <p align="center"><img src="assets/login.png" alt="Inicio de sesión" width="420"></p> | <p align="center"><img src="assets/verDashboardsAnalista.png" alt="Dashboard de ingresos" width="420"></p> |
+
+### Editor, explorador e importación
+
+| Editor de dashboards | Explorador | Importación |
+| :---: | :---: | :---: |
+| <p align="center"><img src="assets/editorDashboardAnalista.png" alt="Editor de dashboards" width="280"></p> | <p align="center"><img src="assets/exploradorDatosAnalista.png" alt="Explorador de datos" width="280"></p> | <p align="center"><img src="assets/importarDatosAnalista.png" alt="Wizard de importación" width="280"></p> |
+
+<p align="center">
+  <em>Pantallas que un reclutador suele revisar primero. El resto está en <a href="./assets/">assets/</a>.</em>
+</p>
 
 ## Tecnologías utilizadas
 
-### Frontend
-
-- **Angular 22:** aplicación zoneless, lazy routes y Signals.
-- **Signal Forms:** formularios con `@angular/forms/signals`.
-- **@dativa/ui:** design system del proyecto (tokens, Button, Input, Select, Card, Badge, Empty State, Loading).
-- **angular-gridster2:** grid del editor de dashboards.
-- **ngx-echarts + ECharts 6:** renderizado de widgets de gráficos.
-- **@stomp/stompjs:** cliente WebSocket/STOMP para ventas en vivo.
-- **Vitest:** pruebas unitarias.
-- **Playwright:** pruebas E2E (login, roles, editor, filtros, explorador y apariencia).
-
-### Backend
-
-- **Java 21:** lenguaje del API.
-- **Spring Boot 4.1:** REST, seguridad, validación y configuración.
-- **Spring Security + JWT:** autenticación y autorización por roles.
-- **Spring Data JPA:** persistencia de usuarios, dashboards, alertas y actividad.
-- **JdbcTemplate:** consultas analíticas agregadas y listado de transacciones.
-- **Spring WebSocket/STOMP:** canal `/ws` y topic `/topic/sales`.
-- **Flyway:** migraciones de PostgreSQL.
-- **Maven Wrapper (`mvnw`):** construcción del backend sin instalar Maven.
-
-### Base de datos
-
-- **PostgreSQL 16:** base relacional de usuarios, catálogos, pedidos, líneas, dashboards y alertas.
-
-### Herramientas / Librerías / Servicios
-
-- **Docker Compose:** PostgreSQL local.
-- **npm:** gestor de paquetes del frontend.
-- **ng-packagr:** empaquetado de la librería `@dativa/ui`.
-- **SheetJS (`xlsx`):** lectura de CSV/Excel en la importación.
+- **Web:** Angular 22 (zoneless, Signals) · `@dativa/ui` · angular-gridster2 · ngx-echarts
+- **API:** Java 21 · Spring Boot · Spring Security · JWT · JPA · JdbcTemplate · Flyway
+- **Datos:** PostgreSQL 16
+- **Tiempo real:** WebSocket / STOMP
+- **Calidad:** Vitest · Playwright
+- **Extra:** Docker Compose · SheetJS (`xlsx`) · ng-packagr
 
 ## Requisitos e instalación
 
@@ -90,8 +74,8 @@ El login, los dashboards, el explorador y la importación funcionan **sin backen
 
 ```powershell
 # 1. Clonar el repositorio
-git clone `[URL del repositorio]`
-cd proyecto_dativa
+git clone https://github.com/JulianAyaO/dativa-analytics.git
+cd dativa-analytics
 
 # 2. Instalar y arrancar el frontend
 cd frontend
@@ -127,7 +111,7 @@ Comprueba el API en:
 http://localhost:8080/api/health
 ```
 
-Cuando el API esté arriba, cambia `useMockAuth` a `false` en `frontend/apps/dativa-web/src/environments/environment.ts`. Auth, dashboards y analítica pasan a PostgreSQL; el frontend sigue usando el contrato `WidgetQuery → WidgetResult`.
+Cuando el API esté arriba, cambia `useMockAuth` a `false` en `frontend/apps/dativa-web/src/environments/environment.ts`.
 
 ## Variables de entorno
 
@@ -145,12 +129,15 @@ No hace falta un `.env` para el flujo mock. En desarrollo local con API, los val
 
 ## Despliegue
 
-El proyecto está orientado a **desarrollo y ejecución en entorno local**. Por el momento no hay una demo pública.
+Demo pública (frontend en mock) en [Cloudflare Workers](https://dativa-analytics.ayajulian-dev.workers.dev/login).
+
+El API + PostgreSQL se pueden levantar en local con Docker Compose, como en la instalación opcional.
 
 ## Estructura del proyecto
 
 ```text
 proyecto_dativa/
+├── assets/                  # gif de demo y capturas para el README
 ├── backend/                 # API Spring Boot (auth, analítica, importación, tiempo real)
 ├── frontend/                # Workspace Angular (app + design system)
 │   ├── apps/dativa-web/     # aplicación web

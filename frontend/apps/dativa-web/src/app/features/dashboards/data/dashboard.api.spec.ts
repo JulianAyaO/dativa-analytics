@@ -13,6 +13,10 @@ describe('DashboardApi', () => {
 
   it('creates, updates layout and reads the same dashboard back', async () => {
     const api = TestBed.inject(DashboardApi);
+    const list = await api.list();
+    expect(list.some((item) => item.id === 'demo-ingresos-2026')).toBe(true);
+    expect(list.find((item) => item.id === 'demo-ingresos-2026')?.widgets.length).toBeGreaterThan(5);
+
     const created = await api.create({ name: 'Operación', description: '' });
 
     created.widgets.push({

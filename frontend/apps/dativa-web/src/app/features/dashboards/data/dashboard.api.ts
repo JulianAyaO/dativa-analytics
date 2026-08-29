@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ActivityLog } from '../../../core/activity/activity.log';
+import { ensurePortfolioDemo } from '../../../core/demo/portfolio-demo';
 import {
   Dashboard,
   DashboardDraft,
@@ -213,6 +214,7 @@ export class DashboardApi {
   }
 
   private readAll(): Dashboard[] {
+    ensurePortfolioDemo();
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
       return [];

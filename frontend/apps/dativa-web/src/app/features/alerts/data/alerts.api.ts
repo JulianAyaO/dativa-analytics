@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ActivityLog } from '../../../core/activity/activity.log';
+import { ensurePortfolioDemo } from '../../../core/demo/portfolio-demo';
 import { AnalyticsAlert } from '../alert.models';
 import { NotificationsApi } from '../../notifications/notifications.api';
 
@@ -75,6 +76,7 @@ export class AlertsApi {
 }
 
 function readAlerts(): AnalyticsAlert[] {
+  ensurePortfolioDemo();
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
     return [];

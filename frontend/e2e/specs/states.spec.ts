@@ -3,9 +3,10 @@ import { loginWithQuickButton } from '../helpers/auth';
 import { addWidget, createDashboard, waitForWidgetData } from '../helpers/dashboard';
 
 test.describe('Estados de flujo crítico', () => {
-  test('el catálogo vacío no bloquea al analista', async ({ page }) => {
+  test('el catálogo muestra tableros de demo listos para consultar', async ({ page }) => {
     await loginWithQuickButton(page, 'analyst');
-    await expect(page.getByRole('heading', { name: 'Todavía no hay dashboards' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Ingresos 2026' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Operación Caribe' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Nuevo dashboard' })).toBeEnabled();
   });
 

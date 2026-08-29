@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ensurePortfolioDemo } from '../../core/demo/portfolio-demo';
 import { AuthStore } from '../auth/auth.store';
 
 export type ActivityAction =
@@ -91,6 +92,7 @@ export class ActivityLog {
 }
 
 function readEvents(): ActivityEvent[] {
+  ensurePortfolioDemo();
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
     return [];
