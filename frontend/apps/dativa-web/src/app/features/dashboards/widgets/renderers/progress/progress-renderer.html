@@ -1,0 +1,17 @@
+<div class="dtv-progress">
+  <p class="dtv-progress__ratio">{{ ratioLabel() }}</p>
+  <p class="dtv-progress__copy">{{ valueLabel() }} de {{ targetLabel() }} de meta</p>
+  <div
+    class="dtv-progress__track"
+    role="progressbar"
+    [attr.aria-valuenow]="barWidth()"
+    aria-valuemin="0"
+    aria-valuemax="100"
+  >
+    <div
+      class="dtv-progress__fill"
+      [class.dtv-progress__fill--ok]="overTarget()"
+      [style.width.%]="barWidth()"
+    ></div>
+  </div>
+</div>

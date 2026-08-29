@@ -1,0 +1,17 @@
+<button
+  class="dtv-theme-toggle"
+  type="button"
+  role="switch"
+  [attr.aria-checked]="theme.resolved() === 'dark'"
+  [attr.aria-label]="theme.resolved() === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'"
+  (click)="theme.toggleLightDark()"
+>
+  <span class="dtv-theme-toggle__track" aria-hidden="true">
+    <span class="dtv-theme-toggle__icon dtv-theme-toggle__icon--sun">Claro</span>
+    <span class="dtv-theme-toggle__icon dtv-theme-toggle__icon--moon">Oscuro</span>
+    <span
+      class="dtv-theme-toggle__knob"
+      [class.dtv-theme-toggle__knob--dark]="theme.resolved() === 'dark'"
+    ></span>
+  </span>
+</button>

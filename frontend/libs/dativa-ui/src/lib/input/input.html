@@ -1,0 +1,33 @@
+<div class="dtv-field">
+  @if (label()) {
+    <label class="dtv-field__label" [class.dtv-sr-only]="hideLabel()" [attr.for]="inputId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="dtv-field__required" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+  <input
+    #control
+    class="dtv-field__control"
+    [id]="inputId()"
+    [type]="type()"
+    [attr.autocomplete]="autocomplete() || null"
+    [attr.placeholder]="placeholder() || null"
+    [attr.aria-invalid]="showError() || null"
+    [attr.aria-describedby]="describedBy()"
+    [attr.aria-required]="required() || null"
+    [disabled]="disabled()"
+    [value]="value()"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+  />
+  @if (hint() && !showError()) {
+    <span class="dtv-field__hint" [id]="inputId() + '-hint'">{{ hint() }}</span>
+  }
+  @if (showError()) {
+    <span class="dtv-field__error" [id]="inputId() + '-error'" role="alert">
+      {{ errorText() }}
+    </span>
+  }
+</div>

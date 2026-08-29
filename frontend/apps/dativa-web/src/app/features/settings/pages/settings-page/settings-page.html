@@ -1,0 +1,107 @@
+<dtv-page-header
+  title="Ajustes"
+  subtitle="Cuenta, apariencia y preferencias personales."
+/>
+
+<div class="dtv-settings">
+  <div class="dtv-settings__col">
+    <dtv-card>
+      <h2 class="dtv-settings__title">Cuenta</h2>
+      <p class="dtv-settings__copy">
+        Rol actual:
+        <strong>{{ roleLabels[auth.role() ?? 'VIEWER'] }}</strong>
+      </p>
+
+      <form class="dtv-settings__form" novalidate (submit)="saveProfile($event)">
+        <dtv-input label="Nombre visible" autocomplete="name" [formField]="profileForm.name" />
+        <dtv-input label="Correo" type="email" autocomplete="username" [formField]="profileForm.email" />
+        <dtv-input
+          label="Confirmar correo"
+          type="email"
+          autocomplete="username"
+          [formField]="profileForm.emailConfirm"
+        />
+        @if (profileError()) {
+          <p class="dtv-settings__error" role="alert">{{ profileError() }}</p>
+        }
+        @if (profileMessage()) {
+          <p class="dtv-settings__success" role="status">{{ profileMessage() }}</p>
+        }
+        <button dtvButton type="submit" [loading]="profileForm().submitting()">Guardar perfil</button>
+      </form>
+    </dtv-card>
+
+    <dtv-card>
+      <h2 class="dtv-settings__title">Contraseña</h2>
+      <form class="dtv-settings__form" novalidate (submit)="savePassword($event)">
+        <dtv-input
+          label="Contraseña actual"
+          type="password"
+          autocomplete="current-password"
+          [formField]="passwordForm.currentPassword"
+        />
+        <dtv-input
+          label="Nueva contraseña"
+          type="password"
+          autocomplete="new-password"
+          [hint]="passwordHint"
+          [formField]="passwordForm.newPassword"
+        />
+        <dtv-input
+          label="Confirmar nueva contraseña"
+          type="password"
+          autocomplete="new-password"
+          [formField]="passwordForm.newPasswordConfirm"
+        />
+        @if (passwordError()) {
+          <p class="dtv-settings__error" role="alert">{{ passwordError() }}</p>
+        }
+        @if (passwordMessage()) {
+          <p class="dtv-settings__success" role="status">{{ passwordMessage() }}</p>
+        }
+        <button dtvButton type="submit" [loading]="passwordForm().submitting()">Cambiar contraseña</button>
+      </form>
+    </dtv-card>
+  </div>
+
+  <div class="dtv-settings__col">
+    <dtv-card>
+      <fieldset class="dtv-settings__group">
+        <legend>Tema</legend>
+        <p>Elige el contraste de la interfaz. Sistema sigue la preferencia del dispositivo.</p>
+        <div class="dtv-settings__themes" role="radiogroup" aria-label="Tema de la interfaz">
+          @for (option of themeOptions; track option.id) {
+            <label
+              class="dtv-settings__theme"
+              [class.dtv-settings__theme--selected]="theme.mode() === option.id"
+            >
+              <input
+                type="radio"
+                name="theme"
+                [attr.aria-label]="option.label"
+                [value]="option.id"
+                [checked]="theme.mode() === option.id"
+                (change)="setTheme(option.id)"
+              />
+              <span class="dtv-settings__swatch" [attr.data-theme]="option.id" aria-hidden="true">
+                <span class="dtv-settings__swatch-bar"></span>
+                <span class="dtv-settings__swatch-card"></span>
+                <span class="dtv-settings__swatch-dot"></span>
+              </span>
+              <span class="dtv-settings__theme-copy">
+                <strong>{{ option.label }}</strong>
+                <small>{{ option.hint }}</small>
+              </span>
+            </label>
+          }
+        </div>
+      </fieldset>
+    </dtv-card>
+
+    <dtv-card>
+      <h2 class="dtv-settings__title">Sesión</h2>
+      <p class="dtv-settings__copy">Cierra la sesión en este dispositivo.</p>
+      <button dtvButton variant="secondary" type="button" (click)="logout()">Cerrar sesión</button>
+    </dtv-card>
+  </div>
+</div>

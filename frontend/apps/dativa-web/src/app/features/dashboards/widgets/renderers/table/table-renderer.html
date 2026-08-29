@@ -1,0 +1,21 @@
+<div class="dtv-table-wrap">
+  <table>
+    <caption class="dtv-sr-only">{{ data().metricLabel }} por {{ data().dimensionLabel }}</caption>
+    <thead>
+      <tr>
+        <th>{{ data().dimensionLabel }}</th>
+        <th>{{ data().metricLabel }}</th>
+        <th>Peso</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.key) {
+        <tr>
+          <td>{{ row.label }}</td>
+          <td>{{ row.valueLabel }}</td>
+          <td>{{ row.shareLabel }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

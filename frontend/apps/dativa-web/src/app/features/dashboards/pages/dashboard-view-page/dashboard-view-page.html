@@ -1,0 +1,52 @@
+@if (status() === 'loading') {
+  <div class="dtv-view__status">
+    <dtv-loading label="Cargando dashboard" />
+  </div>
+} @else if (status() === 'missing') {
+  <div class="dtv-view__status">
+    <dtv-empty-state
+      title="Dashboard no encontrado"
+      description="Es posible que se haya eliminado o que el enlace ya no sea válido."
+    >
+      <button dtvButton variant="secondary" type="button" (click)="goBack()">
+        Volver al catálogo
+      </button>
+    </dtv-empty-state>
+  </div>
+} @else if (status() === 'error') {
+  <div class="dtv-view__status">
+    <dtv-empty-state
+      title="No se pudo cargar el dashboard"
+      description="Revisa la conexión e inténtalo de nuevo."
+    >
+      <button dtvButton variant="secondary" type="button" (click)="retry()">Reintentar</button>
+    </dtv-empty-state>
+  </div>
+} @else if (dashboard(); as current) {
+  <div class="dtv-view">
+    <header class="dtv-view__toolbar">
+      <div class="dtv-view__lead">
+        <button dtvButton variant="secondary" type="button" (click)="goBack()">Volver</button>
+        <div class="dtv-view__title">
+          <p class="dtv-view__kicker">Dashboard</p>
+          <h1>{{ current.name }}</h1>
+          @if (current.description) {
+            <p>{{ current.description }}</p>
+          }
+        </div>
+      </div>
+      <div class="dtv-view__actions">
+        <button dtvButton variant="secondary" type="button" [loading]="exporting()" (click)="exportAnalysis()">
+          Exportar datos
+        </button>
+        @if (auth.canEdit()) {
+          <button dtvButton type="button" (click)="openEditor()">Editar</button>
+        }
+      </div>
+    </header>
+
+    <dtv-dashboard-filter-bar [presets]="current.filterPresets" />
+
+    <dtv-dashboard-canvas [widgets]="current.widgets" [editable]="false" (explore)="openExplorer($event)" />
+  </div>
+}

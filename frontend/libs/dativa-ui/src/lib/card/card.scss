@@ -1,0 +1,18 @@
+:host {
+  display: grid;
+  min-height: 0;
+}
+
+.dtv-card {
+  display: grid;
+  align-content: start;
+  min-height: 100%;
+  background: var(--dtv-color-surface);
+  border: 1px solid var(--dtv-color-border);
+  border-radius: var(--dtv-radius-lg);
+  box-shadow: var(--dtv-shadow-sm);
+  padding: var(--dtv-space-6);
+  transition:
+    border-color var(--dtv-duration) var(--dtv-ease),
+    box-shadow var(--dtv-duration) var(--dtv-ease);
+}

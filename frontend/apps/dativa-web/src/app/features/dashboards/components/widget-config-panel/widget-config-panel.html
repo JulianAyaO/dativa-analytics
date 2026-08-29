@@ -1,0 +1,69 @@
+<aside class="dtv-config" aria-label="Configuración del widget">
+  @if (widget(); as selected) {
+    <h2>Configuración</h2>
+    <p>{{ typeLabel() }}</p>
+
+    <dtv-input
+      label="Título"
+      [value]="selected.title"
+      (valueChange)="onTitle($event)"
+    />
+
+    <dtv-select
+      label="Fuente de datos"
+      [value]="selected.config.dataset"
+      (valueChange)="onDataset($event)"
+    >
+      @for (option of datasets; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </dtv-select>
+
+    <dtv-select
+      label="Métrica"
+      [value]="selected.config.metric"
+      (valueChange)="onMetric($event)"
+    >
+      @for (option of metrics; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </dtv-select>
+
+    @if (showDimension()) {
+      <dtv-select
+        label="Agrupar por"
+        [value]="selected.config.dimension ?? ''"
+        (valueChange)="onDimension($event)"
+      >
+        @for (option of dimensions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </dtv-select>
+    }
+
+    <dtv-select
+      label="Periodo"
+      [value]="selected.config.period ?? 'last_12_months'"
+      (valueChange)="onPeriod($event)"
+    >
+      @for (option of periods; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </dtv-select>
+
+    @if (showTopN()) {
+      <dtv-select
+        label="Top N"
+        [value]="'' + (selected.config.topN ?? 5)"
+        (valueChange)="onTopN($event)"
+      >
+        @for (option of topN; track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </dtv-select>
+    }
+  } @else {
+    <h2>Configuración</h2>
+    <p>Selecciona un widget para editar su fuente, métrica y agrupación.</p>
+  }
+</aside>

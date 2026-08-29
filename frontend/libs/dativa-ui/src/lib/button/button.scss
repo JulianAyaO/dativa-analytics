@@ -1,0 +1,96 @@
+:host.dtv-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dtv-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--dtv-radius-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    opacity 120ms ease;
+}
+
+:host.dtv-button--sm {
+  min-height: var(--dtv-control-height-sm);
+  padding: 0 var(--dtv-space-3);
+  font-size: var(--dtv-type-sm);
+}
+
+:host.dtv-button--md {
+  min-height: var(--dtv-control-height);
+  padding: 0 var(--dtv-space-4);
+  font-size: var(--dtv-type-md);
+}
+
+:host.dtv-button--lg {
+  min-height: var(--dtv-control-height-lg);
+  padding: 0 var(--dtv-space-5);
+  font-size: var(--dtv-type-body);
+}
+
+:host.dtv-button--primary {
+  background: var(--dtv-color-primary);
+  color: var(--dtv-color-text-inverse);
+}
+
+:host.dtv-button--primary:hover:not(:disabled) {
+  background: var(--dtv-color-primary-hover);
+}
+
+:host.dtv-button--secondary {
+  background: var(--dtv-color-surface);
+  border-color: var(--dtv-color-border-strong);
+  color: var(--dtv-color-text);
+}
+
+:host.dtv-button--secondary:hover:not(:disabled) {
+  background: var(--dtv-color-surface-muted);
+}
+
+:host.dtv-button--ghost {
+  background: transparent;
+  color: var(--dtv-color-text);
+}
+
+:host.dtv-button--ghost:hover:not(:disabled) {
+  background: var(--dtv-color-surface-muted);
+}
+
+:host.dtv-button--danger {
+  background: var(--dtv-color-danger);
+  color: var(--dtv-color-on-danger);
+}
+
+:host.dtv-button--danger:hover:not(:disabled) {
+  background: var(--dtv-color-danger-hover);
+}
+
+:host.dtv-button:disabled {
+  opacity: 0.55;
+}
+
+.dtv-button__content--hidden {
+  visibility: hidden;
+}
+
+.dtv-button__spinner {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: dtv-spin 700ms linear infinite;
+}
+
+@keyframes dtv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

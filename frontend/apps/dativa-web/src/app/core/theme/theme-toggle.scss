@@ -1,0 +1,54 @@
+:host {
+  display: inline-flex;
+}
+
+.dtv-theme-toggle {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.dtv-theme-toggle__track {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  width: 6.6rem;
+  height: 2.15rem;
+  padding: 0 0.45rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--dtv-color-surface);
+  box-shadow: var(--dtv-shadow-sm);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.dtv-theme-toggle__icon {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: var(--dtv-color-text-muted);
+}
+
+.dtv-theme-toggle__knob {
+  position: absolute;
+  top: 0.18rem;
+  left: 0.18rem;
+  z-index: 0;
+  width: calc(50% - 0.22rem);
+  height: calc(100% - 0.36rem);
+  border-radius: 999px;
+  background: var(--dtv-color-surface);
+  box-shadow: var(--dtv-shadow-sm);
+  transition: transform 180ms ease;
+}
+
+.dtv-theme-toggle__knob--dark {
+  transform: translateX(100%);
+}
+
+.dtv-theme-toggle[aria-checked='true'] .dtv-theme-toggle__icon--moon,
+.dtv-theme-toggle[aria-checked='false'] .dtv-theme-toggle__icon--sun {
+  color: var(--dtv-color-text);
+}

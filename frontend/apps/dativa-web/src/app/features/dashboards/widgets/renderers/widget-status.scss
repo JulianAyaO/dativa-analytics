@@ -1,0 +1,20 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.dtv-widget-status {
+  display: grid;
+  place-items: center;
+  gap: var(--dtv-space-3);
+  height: 100%;
+  padding: var(--dtv-space-2);
+  text-align: center;
+  color: var(--dtv-color-text-muted);
+  font-size: var(--dtv-type-sm);
+}
+
+p {
+  margin: 0;
+  max-width: 16rem;
+}

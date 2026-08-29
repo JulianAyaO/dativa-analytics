@@ -1,0 +1,30 @@
+<div class="dtv-canvas" [class.dtv-canvas--empty]="widgets().length === 0">
+  @if (widgets().length === 0) {
+    <div class="dtv-canvas__empty">
+      <dtv-empty-state
+        [title]="editable() ? 'Lienzo vacío' : 'Sin widgets'"
+        [description]="
+          editable()
+            ? 'Elige un widget en la paleta para empezar a componer el dashboard.'
+            : 'Este dashboard todavía no tiene bloques.'
+        "
+      />
+    </div>
+  }
+
+  <gridster [options]="options()" (click)="onBackgroundClick($event)">
+    @for (widget of widgets(); track widget.id) {
+      <gridster-item [item]="widget.layout">
+        <dtv-widget-host
+          [widget]="widget"
+          [selected]="selectedId() === widget.id"
+          [editable]="editable()"
+          (selectWidget)="selectWidget.emit($event)"
+          (duplicate)="duplicateWidget.emit($event)"
+          (remove)="removeWidget.emit($event)"
+          (explore)="explore.emit($event)"
+        />
+      </gridster-item>
+    }
+  </gridster>
+</div>

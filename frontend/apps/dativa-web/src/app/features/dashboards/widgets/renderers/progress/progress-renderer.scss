@@ -1,0 +1,41 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.dtv-progress {
+  display: grid;
+  align-content: center;
+  gap: var(--dtv-space-2);
+  height: 100%;
+}
+
+.dtv-progress__ratio {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.dtv-progress__copy {
+  margin: 0;
+  color: var(--dtv-color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.dtv-progress__track {
+  height: 0.7rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--dtv-color-surface-muted);
+}
+
+.dtv-progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--dtv-color-primary);
+}
+
+.dtv-progress__fill--ok {
+  background: var(--dtv-color-success);
+}

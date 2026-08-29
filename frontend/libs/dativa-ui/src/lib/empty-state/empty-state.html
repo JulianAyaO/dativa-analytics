@@ -1,0 +1,12 @@
+<section class="dtv-empty" role="status">
+  <div class="dtv-empty__icon" aria-hidden="true">
+    <ng-content select="[dtvEmptyIcon]" />
+  </div>
+  <h2 class="dtv-empty__title">{{ title() }}</h2>
+  @if (description()) {
+    <p class="dtv-empty__description">{{ description() }}</p>
+  }
+  <div class="dtv-empty__actions">
+    <ng-content />
+  </div>
+</section>

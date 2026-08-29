@@ -1,0 +1,104 @@
+<dtv-page-header title="Alertas" subtitle="Avisos cuando ventas o pedidos superan o bajan de un valor.">
+  @if (auth.canManageAlerts()) {
+    <button dtvButton type="button" (click)="openCreate()">Nueva alerta</button>
+  }
+</dtv-page-header>
+
+@if (editing() && auth.canManageAlerts()) {
+  <dtv-card class="dtv-alerts__form-card">
+    <form class="dtv-alerts__form" novalidate (submit)="onSave($event)">
+      <h2>{{ editingId() ? 'Editar alerta' : 'Nueva alerta' }}</h2>
+      <dtv-input label="Nombre" [formField]="draftForm.name" />
+      <dtv-select label="Fuente" [formField]="draftForm.dataset">
+        @for (option of datasets; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </dtv-select>
+      <dtv-select label="Métrica" [formField]="draftForm.metric">
+        @for (option of metrics; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </dtv-select>
+      <dtv-select label="Periodo" [formField]="draftForm.period">
+        @for (option of periods; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </dtv-select>
+      <dtv-select label="Condición" [formField]="draftForm.condition">
+        @for (option of conditions; track option[0]) {
+          <option [value]="option[0]">{{ option[1] }}</option>
+        }
+      </dtv-select>
+      <dtv-input label="Valor objetivo" [formField]="draftForm.threshold" />
+      <dtv-select label="Frecuencia (minutos)" [formField]="draftForm.frequencyMinutes">
+        <option value="1">1</option>
+        <option value="5">5</option>
+        <option value="15">15</option>
+      </dtv-select>
+      <dtv-input label="Región (opcional)" [formField]="draftForm.region" />
+      <dtv-select label="Estado" [formField]="draftForm.active">
+        <option value="true">Activa</option>
+        <option value="false">Inactiva</option>
+      </dtv-select>
+      <div class="dtv-alerts__actions">
+        <button dtvButton variant="secondary" type="button" (click)="editing.set(false)">Cancelar</button>
+        <button dtvButton type="submit" [loading]="draftForm().submitting()">Guardar</button>
+      </div>
+    </form>
+  </dtv-card>
+}
+
+@if (status() === 'loading') {
+  <dtv-loading class="dtv-fill" label="Cargando alertas" />
+} @else if (status() === 'error') {
+  <dtv-card class="dtv-fill">
+    <dtv-empty-state title="No se pudieron cargar las alertas" description="Inténtalo de nuevo.">
+      <button dtvButton variant="secondary" type="button" (click)="refresh()">Reintentar</button>
+    </dtv-empty-state>
+  </dtv-card>
+} @else if (alerts().length === 0) {
+  <dtv-card class="dtv-fill">
+    <dtv-empty-state
+      title="No hay alertas"
+      [description]="auth.canManageAlerts() ? 'Crea un aviso para vigilar una métrica.' : 'Cuando un analista publique una alerta, aparecerá aquí.'"
+    />
+  </dtv-card>
+} @else {
+  <ul class="dtv-alerts__list">
+    @for (alert of alerts(); track alert.id) {
+      <li>
+        <dtv-card>
+          <article class="dtv-alerts__item">
+            <div>
+              <h2>{{ alert.name }}</h2>
+              <p>{{ alert.dataset === 'sales' ? 'Ventas' : 'Pedidos' }} · {{ alert.metric }} · {{ alert.condition }} {{ alert.threshold }}</p>
+              <p class="dtv-alerts__meta">
+                @if (alert.lastFiredAt) {
+                  Última activación: {{ alert.lastFiredAt | date: 'medium' }}
+                } @else {
+                  Sin activaciones
+                }
+              </p>
+            </div>
+            <div class="dtv-alerts__item-actions">
+              <dtv-badge [tone]="alert.active ? 'success' : 'neutral'">
+                {{ alert.active ? 'Activa' : 'Inactiva' }}
+              </dtv-badge>
+              @if (auth.canManageAlerts()) {
+                <button dtvButton variant="secondary" size="sm" type="button" (click)="openEdit(alert)">
+                  Editar
+                </button>
+                <button dtvButton variant="secondary" size="sm" type="button" (click)="toggle(alert)">
+                  {{ alert.active ? 'Desactivar' : 'Activar' }}
+                </button>
+                <button dtvButton variant="danger" size="sm" type="button" (click)="remove(alert)">
+                  Eliminar
+                </button>
+              }
+            </div>
+          </article>
+        </dtv-card>
+      </li>
+    }
+  </ul>
+}

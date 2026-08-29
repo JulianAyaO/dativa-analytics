@@ -1,0 +1,129 @@
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  --dtv-font: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --dtv-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --dtv-type-xs: 0.75rem;
+  --dtv-type-sm: 0.8125rem;
+  --dtv-type-md: 0.875rem;
+  --dtv-type-body: 0.9375rem;
+  --dtv-type-lg: 1.125rem;
+  --dtv-type-xl: 1.5rem;
+  --dtv-type-display: clamp(2.4rem, 4vw, 3.4rem);
+
+  --dtv-color-bg: #f3f5f7;
+  --dtv-color-surface: #ffffff;
+  --dtv-color-surface-muted: #eef1f4;
+  --dtv-color-border: #d5dce3;
+  --dtv-color-border-strong: #b7c2cd;
+  --dtv-color-text: #15202b;
+  --dtv-color-text-muted: #4a5563;
+  --dtv-color-text-inverse: #ffffff;
+  --dtv-color-primary: #0f766e;
+  --dtv-color-primary-hover: #115e59;
+  --dtv-color-primary-soft: #ccfbf1;
+  --dtv-color-danger: #b42318;
+  --dtv-color-danger-hover: #912018;
+  --dtv-color-danger-soft: #fee4e2;
+  --dtv-color-on-danger: #ffffff;
+  --dtv-color-success: #067647;
+  --dtv-color-success-soft: #d1fadf;
+  --dtv-color-warning: #b54708;
+  --dtv-color-warning-soft: #feeece;
+  --dtv-color-info: #026aa2;
+  --dtv-color-info-soft: #d1e9ff;
+  --dtv-color-overlay: rgb(15 23 42 / 45%);
+  --dtv-chart-1: #0f766e;
+  --dtv-chart-2: #026aa2;
+  --dtv-chart-3: #b54708;
+  --dtv-chart-4: #6941c6;
+  --dtv-chart-5: #dd2590;
+  --dtv-focus-ring: 0 0 0 3px rgb(15 118 110 / 32%);
+  --dtv-shadow-sm: 0 1px 2px rgb(15 23 42 / 6%);
+  --dtv-shadow-md: 0 8px 24px rgb(15 23 42 / 8%);
+  --dtv-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dtv-duration: 180ms;
+  --dtv-duration-page: 420ms;
+
+  --dtv-radius-sm: 6px;
+  --dtv-radius-md: 10px;
+  --dtv-radius-lg: 16px;
+  --dtv-space-1: 0.25rem;
+  --dtv-space-2: 0.5rem;
+  --dtv-space-3: 0.75rem;
+  --dtv-space-4: 1rem;
+  --dtv-space-5: 1.25rem;
+  --dtv-space-6: 1.5rem;
+  --dtv-space-8: 2rem;
+  --dtv-control-height-sm: 2rem;
+  --dtv-control-height: 2.5rem;
+  --dtv-control-height-lg: 2.75rem;
+  --dtv-table-cell-y: 0.55rem;
+  --dtv-table-cell-x: 0.7rem;
+  --dtv-widget-header-height: 2.75rem;
+  --dtv-page-max: 100%;
+  --dtv-page-gutter: clamp(1.25rem, 2.2vw, 2rem);
+  --dtv-login-hero-from: #102027;
+  --dtv-login-hero-to: #0f766e;
+  --dtv-login-hero-text: #f8fffd;
+  --dtv-sidebar-width: 14.75rem;
+  --dtv-sidebar-width-collapsed: 4.4rem;
+  --dtv-topbar-height: 3.5rem;
+  --dtv-z-nav: 20;
+  --dtv-z-overlay: 40;
+  --dtv-z-toast: 60;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --dtv-color-bg: #0e1419;
+  --dtv-color-surface: #172028;
+  --dtv-color-surface-muted: #1e2933;
+  --dtv-color-border: #2b3a46;
+  --dtv-color-border-strong: #3d5160;
+  --dtv-color-text: #e8eef3;
+  --dtv-color-text-muted: #b7c4ce;
+  --dtv-color-text-inverse: #052e2b;
+  --dtv-color-primary: #2dd4bf;
+  --dtv-color-primary-hover: #5eead4;
+  --dtv-color-primary-soft: rgb(45 212 191 / 14%);
+  --dtv-color-danger: #f97066;
+  --dtv-color-danger-hover: #fda29b;
+  --dtv-color-danger-soft: rgb(249 112 102 / 14%);
+  --dtv-color-on-danger: #ffffff;
+  --dtv-color-success: #75e0a7;
+  --dtv-color-success-soft: rgb(117 224 167 / 16%);
+  --dtv-color-warning: #fdb022;
+  --dtv-color-warning-soft: rgb(253 176 34 / 16%);
+  --dtv-color-info: #7cd4fd;
+  --dtv-color-info-soft: rgb(124 212 253 / 16%);
+  --dtv-color-overlay: rgb(2 6 12 / 62%);
+  --dtv-chart-1: #2dd4bf;
+  --dtv-chart-2: #7cd4fd;
+  --dtv-chart-3: #fdb022;
+  --dtv-chart-4: #bdb4fe;
+  --dtv-chart-5: #faa7e0;
+  --dtv-focus-ring: 0 0 0 3px rgb(45 212 191 / 38%);
+  --dtv-shadow-sm: 0 1px 2px rgb(0 0 0 / 35%);
+  --dtv-shadow-md: 0 12px 32px rgb(0 0 0 / 35%);
+}
+
+[data-density='compact'] {
+  --dtv-type-body: 0.875rem;
+  --dtv-type-lg: 1.05rem;
+  --dtv-type-xl: 1.35rem;
+  --dtv-control-height-sm: 1.75rem;
+  --dtv-control-height: 2.125rem;
+  --dtv-control-height-lg: 2.375rem;
+  --dtv-table-cell-y: 0.35rem;
+  --dtv-table-cell-x: 0.55rem;
+  --dtv-widget-header-height: 2.25rem;
+  --dtv-topbar-height: 3rem;
+  --dtv-space-3: 0.5rem;
+  --dtv-space-4: 0.75rem;
+  --dtv-space-5: 1rem;
+  --dtv-space-6: 1.25rem;
+  --dtv-space-8: 1.5rem;
+}

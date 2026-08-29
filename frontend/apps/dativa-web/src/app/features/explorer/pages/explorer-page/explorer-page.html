@@ -1,0 +1,201 @@
+<div class="dtv-explorer">
+  <div class="dtv-explorer__top">
+    <header class="dtv-explorer__hero">
+      <div class="dtv-explorer__intro">
+        <p class="dtv-explorer__kicker">Consulta tabular</p>
+        <h1>Explorador de datos</h1>
+        <p>
+          Revisa líneas de pedido con filtros, ordenación y paginación en el servidor.
+        </p>
+      </div>
+    </header>
+
+    <dtv-dashboard-filter-bar
+      periodEmptyLabel="Por defecto (12 meses)"
+      ariaLabel="Filtros del explorador"
+    />
+
+    <div class="dtv-explorer__toolbar">
+      <dtv-select label="Fuente" [value]="dataset()" (valueChange)="onDataset($event)">
+        @for (option of datasets; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </dtv-select>
+
+      <dtv-input
+        class="dtv-explorer__search"
+        type="search"
+        label="Buscar"
+        placeholder="Región, categoría, producto o vendedor"
+        hint="La consulta espera 300 ms tras el último carácter."
+        [value]="searchInput()"
+        (valueChange)="onSearch($event)"
+      />
+
+      <div class="dtv-explorer__meta">
+        @if (selectedCount() > 0) {
+          <dtv-badge tone="info">{{ selectedCount() }} seleccionadas</dtv-badge>
+        }
+        <p class="dtv-explorer__range">{{ rangeLabel() }}</p>
+      </div>
+
+      <div class="dtv-explorer__columns">
+        <button
+          dtvButton
+          variant="ghost"
+          size="sm"
+          type="button"
+          [attr.aria-expanded]="columnsOpen()"
+          aria-controls="explorer-columns"
+          (click)="toggleColumns($event)"
+        >
+          Columnas
+        </button>
+        @if (columnsOpen()) {
+          <fieldset id="explorer-columns" class="dtv-explorer__columns-panel" (click)="$event.stopPropagation()">
+            <legend>Columnas visibles</legend>
+            @for (column of columnsCatalog; track column.id) {
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="visible()[column.id] !== false"
+                  (change)="toggleColumn(column.id)"
+                />
+                {{ column.label }}
+              </label>
+            }
+          </fieldset>
+        }
+      </div>
+    </div>
+
+    @if (exportError()) {
+      <p class="dtv-explorer__alert" role="alert">{{ exportError() }}</p>
+    }
+
+    @if (freshData()) {
+      <div class="dtv-explorer__fresh" role="status">
+        <p>Hay datos nuevos</p>
+        <button dtvButton variant="secondary" size="sm" type="button" (click)="reload()">
+          Actualizar
+        </button>
+      </div>
+    }
+  </div>
+
+  <section class="dtv-explorer__table" [attr.aria-busy]="result.isLoading() || null">
+    @if (result.error()) {
+      <dtv-empty-state title="No se pudieron cargar las transacciones" [description]="errorMessage()">
+        <button dtvButton variant="secondary" type="button" (click)="reload()">Reintentar</button>
+      </dtv-empty-state>
+    } @else if (result.isLoading() && !result.hasValue()) {
+      <dtv-loading label="Cargando transacciones" />
+    } @else if (rows().length === 0) {
+      <dtv-empty-state
+        title="Sin transacciones"
+        description="Prueba otro periodo, fuente o filtro. Pedidos en los últimos 7 días no tiene movimientos."
+      />
+    } @else {
+      <div class="dtv-explorer__scroller">
+        <table>
+          <caption class="dtv-sr-only">Líneas de pedido del explorador</caption>
+          <thead>
+            <tr>
+              <th class="dtv-explorer__check" scope="col">
+                <input
+                  type="checkbox"
+                  [checked]="allPageSelected()"
+                  [attr.aria-label]="'Seleccionar página'"
+                  (change)="togglePage()"
+                />
+              </th>
+              @for (column of visibleColumns(); track column.id) {
+                <th
+                  [class.dtv-explorer__num]="column.numeric"
+                  [attr.aria-sort]="ariaSort(column.id)"
+                  scope="col"
+                >
+                  @if (column.sortable) {
+                    <button type="button" [attr.aria-label]="sortButtonLabel(column)" (click)="toggleSort(column.id)">
+                      {{ column.label }}
+                      <span aria-hidden="true">{{ sortLabel(column.id) }}</span>
+                    </button>
+                  } @else {
+                    {{ column.label }}
+                  }
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of rows(); track row.id) {
+              <tr [class.dtv-explorer__row--selected]="isSelected(row.id)" (click)="toggleRow(row.id)">
+                <td class="dtv-explorer__check" (click)="$event.stopPropagation()">
+                  <input
+                    type="checkbox"
+                    [checked]="isSelected(row.id)"
+                    [attr.aria-label]="'Seleccionar transacción ' + row.id"
+                    (change)="toggleRow(row.id)"
+                  />
+                </td>
+                @for (column of visibleColumns(); track column.id) {
+                  <td [class.dtv-explorer__num]="column.numeric">{{ cell(row, column.id) }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <footer class="dtv-explorer__foot">
+    <div class="dtv-explorer__export">
+      <p>Exportar resultados</p>
+      <div class="dtv-explorer__export-actions">
+        <button
+          dtvButton
+          type="button"
+          [disabled]="result.isLoading()"
+          [loading]="exporting()"
+          (click)="exportFile('csv')"
+        >
+          CSV
+        </button>
+        <button
+          dtvButton
+          variant="secondary"
+          type="button"
+          [disabled]="result.isLoading()"
+          [loading]="exporting()"
+          (click)="exportFile('xlsx')"
+        >
+          Excel
+        </button>
+      </div>
+    </div>
+    <div class="dtv-explorer__pager">
+      <button
+        dtvButton
+        variant="secondary"
+        size="sm"
+        type="button"
+        [disabled]="page() === 0 || result.isLoading()"
+        (click)="previousPage()"
+      >
+        Anterior
+      </button>
+      <p>Página {{ page() + 1 }} de {{ totalPages() }}</p>
+      <button
+        dtvButton
+        variant="secondary"
+        size="sm"
+        type="button"
+        [disabled]="page() + 1 >= totalPages() || result.isLoading()"
+        (click)="nextPage()"
+      >
+        Siguiente
+      </button>
+    </div>
+  </footer>
+</div>

@@ -1,0 +1,31 @@
+<div class="dtv-field">
+  @if (label()) {
+    <label class="dtv-field__label" [attr.for]="selectId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="dtv-field__required" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+  <select
+    class="dtv-field__control dtv-field__control--select"
+    [id]="selectId()"
+    [disabled]="disabled()"
+    [attr.aria-invalid]="showError() || null"
+    [attr.aria-required]="required() || null"
+    [attr.aria-describedby]="describedBy()"
+    [value]="value()"
+    (change)="onChange($event)"
+    (blur)="onBlur()"
+  >
+    <ng-content />
+  </select>
+  @if (hint() && !showError()) {
+    <span class="dtv-field__hint" [id]="selectId() + '-hint'">{{ hint() }}</span>
+  }
+  @if (showError()) {
+    <span class="dtv-field__error" [id]="selectId() + '-error'" role="alert">
+      {{ errorText() }}
+    </span>
+  }
+</div>

@@ -1,0 +1,104 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.dtv-widget {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  background: var(--dtv-color-surface);
+  border: 1px solid var(--dtv-color-border);
+  border-radius: var(--dtv-radius-md);
+  box-shadow: var(--dtv-shadow-sm);
+  overflow: hidden;
+  transition:
+    border-color var(--dtv-duration) var(--dtv-ease),
+    box-shadow var(--dtv-duration) var(--dtv-ease);
+}
+
+.dtv-widget--selected {
+  border-color: var(--dtv-color-primary);
+  box-shadow: var(--dtv-focus-ring);
+}
+
+.dtv-widget__header {
+  display: flex;
+  align-items: center;
+  gap: var(--dtv-space-2);
+  min-height: var(--dtv-widget-header-height);
+  padding: 0 var(--dtv-space-2) 0 var(--dtv-space-3);
+  border-bottom: 1px solid var(--dtv-color-border);
+  background: var(--dtv-color-surface-muted);
+}
+
+.dtv-widget__drag {
+  border: 0;
+  background: transparent;
+  color: var(--dtv-color-text-muted);
+  cursor: grab;
+  letter-spacing: -0.2em;
+  padding: 0 0.15rem;
+}
+
+.dtv-widget__title {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: var(--dtv-space-2) 0;
+}
+
+.dtv-widget__title span,
+.dtv-widget__title small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dtv-widget__title small {
+  color: var(--dtv-color-text-muted);
+  font-size: var(--dtv-type-xs);
+}
+
+.dtv-widget__menu {
+  position: relative;
+}
+
+.dtv-widget__menu-trigger {
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: var(--dtv-radius-sm);
+  background: transparent;
+}
+
+.dtv-widget__menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 2;
+  min-width: 9rem;
+  padding: var(--dtv-space-1);
+  border: 1px solid var(--dtv-color-border);
+  border-radius: var(--dtv-radius-sm);
+  background: var(--dtv-color-surface);
+  box-shadow: var(--dtv-shadow-md);
+}
+
+.dtv-widget__menu-panel button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--dtv-radius-sm);
+}
+
+.dtv-widget__body {
+  min-height: 0;
+  padding: var(--dtv-space-4);
+}

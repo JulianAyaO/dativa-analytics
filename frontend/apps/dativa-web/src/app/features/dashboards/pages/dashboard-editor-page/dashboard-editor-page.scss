@@ -1,0 +1,149 @@
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.dtv-editor__status {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+  padding: var(--dtv-page-gutter);
+}
+
+.dtv-editor {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.dtv-editor__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--dtv-space-4);
+  padding: 0.7rem var(--dtv-page-gutter);
+  border-bottom: 1px solid var(--dtv-color-border);
+  background: var(--dtv-color-surface);
+}
+
+.dtv-editor__lead {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.dtv-editor__identity {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 12rem;
+  max-width: 36rem;
+  flex: 1;
+}
+
+.dtv-editor__kicker {
+  margin: 0;
+  color: var(--dtv-color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dtv-editor__name {
+  display: block;
+  width: 100%;
+}
+
+:host ::ng-deep .dtv-editor__name .dtv-field {
+  gap: 0;
+}
+
+:host ::ng-deep .dtv-editor__name .dtv-field__control {
+  min-height: 2.35rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  box-shadow: none;
+}
+
+:host ::ng-deep .dtv-editor__name .dtv-field__control:focus,
+:host ::ng-deep .dtv-editor__name .dtv-field__control:focus-visible {
+  outline: none;
+  border: 0;
+  box-shadow: inset 0 -2px 0 var(--dtv-color-primary);
+}
+
+.dtv-editor__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--dtv-space-2);
+}
+
+.dtv-editor__error {
+  margin: 0;
+  color: var(--dtv-color-danger);
+  font-size: 0.8125rem;
+}
+
+.dtv-editor__workspace {
+  display: grid;
+  grid-template-columns: var(--palette-w, 16rem) 0.45rem minmax(0, 1fr) 0.45rem var(--config-w, 20rem);
+  min-height: 0;
+}
+
+.dtv-editor__workspace--resizing {
+  user-select: none;
+  cursor: col-resize;
+}
+
+.dtv-editor__gutter {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--dtv-color-border);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.dtv-editor__gutter:hover,
+.dtv-editor__gutter:focus-visible,
+.dtv-editor__workspace--resizing .dtv-editor__gutter {
+  background: var(--dtv-color-primary);
+}
+
+dtv-widget-palette,
+dtv-widget-config-panel,
+dtv-dashboard-canvas {
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (max-width: 1100px) {
+  .dtv-editor__toolbar {
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .dtv-editor__lead,
+  .dtv-editor__identity {
+    max-width: none;
+  }
+
+  .dtv-editor__workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(22rem, 1fr) auto;
+    overflow: auto;
+  }
+
+  .dtv-editor__gutter {
+    display: none;
+  }
+}

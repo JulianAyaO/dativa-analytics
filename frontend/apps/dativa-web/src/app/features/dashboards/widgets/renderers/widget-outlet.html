@@ -1,0 +1,47 @@
+@switch (frame().status) {
+  @case ('loading') {
+    <dtv-widget-status status="loading" />
+  }
+  @case ('empty') {
+    <dtv-widget-status status="empty" />
+  }
+  @case ('error') {
+    <dtv-widget-status status="error" [message]="errorMessage()" (retry)="reload()" />
+  }
+  @default {
+    <div class="dtv-widget-outlet" [attr.aria-busy]="busy() || null">
+      @switch (family()) {
+        @case ('kpi') {
+          @if (kpi(); as data) {
+            <dtv-kpi-renderer [data]="data" [metric]="metric()" (explore)="exploreKpi()" />
+          }
+        }
+        @case ('series') {
+          @if (series(); as data) {
+            <dtv-series-renderer [data]="data" [metric]="metric()" />
+          }
+        }
+        @case ('composition') {
+          @if (composition(); as data) {
+            <dtv-composition-renderer [data]="data" [metric]="metric()" />
+          }
+        }
+        @case ('table') {
+          @if (table(); as data) {
+            <dtv-table-renderer [data]="data" [metric]="metric()" />
+          }
+        }
+        @case ('ranking') {
+          @if (ranking(); as data) {
+            <dtv-ranking-renderer [data]="data" [metric]="metric()" (explore)="exploreRanking($event)" />
+          }
+        }
+        @case ('progress') {
+          @if (progress(); as data) {
+            <dtv-progress-renderer [data]="data" [metric]="metric()" />
+          }
+        }
+      }
+    </div>
+  }
+}

@@ -1,0 +1,32 @@
+:host.dtv-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  font-size: var(--dtv-type-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--dtv-color-surface-muted);
+  color: var(--dtv-color-text);
+}
+
+:host.dtv-badge--success {
+  background: var(--dtv-color-success-soft);
+  color: var(--dtv-color-success);
+}
+
+:host.dtv-badge--warning {
+  background: var(--dtv-color-warning-soft);
+  color: var(--dtv-color-warning);
+}
+
+:host.dtv-badge--danger {
+  background: var(--dtv-color-danger-soft);
+  color: var(--dtv-color-danger);
+}
+
+:host.dtv-badge--info {
+  background: var(--dtv-color-info-soft);
+  color: var(--dtv-color-info);
+}

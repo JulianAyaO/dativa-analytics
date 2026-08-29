@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.dtv-table-wrap {
+  height: 100%;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+th,
+td {
+  padding: 0.45rem 0.35rem;
+  border-bottom: 1px solid var(--dtv-color-border);
+  text-align: left;
+}
+
+th:not(:first-child),
+td:not(:first-child) {
+  text-align: right;
+}
+
+th {
+  color: var(--dtv-color-text-muted);
+  font-weight: 600;
+}
+
+tbody tr:hover {
+  background: var(--dtv-color-surface-muted);
+}

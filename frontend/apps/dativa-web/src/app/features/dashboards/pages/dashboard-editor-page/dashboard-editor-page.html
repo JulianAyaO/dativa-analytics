@@ -1,0 +1,126 @@
+@if (store.status() === 'loading') {
+  <div class="dtv-editor__status">
+    <dtv-loading label="Cargando dashboard" />
+  </div>
+} @else if (store.status() === 'missing') {
+  <div class="dtv-editor__status">
+    <dtv-empty-state
+      title="Dashboard no encontrado"
+      description="Es posible que se haya eliminado o que el enlace ya no sea válido."
+    >
+      <button dtvButton variant="secondary" type="button" (click)="goBack()">
+        Volver al catálogo
+      </button>
+    </dtv-empty-state>
+  </div>
+} @else if (store.status() === 'error') {
+  <div class="dtv-editor__status">
+    <dtv-empty-state
+      title="No se pudo cargar el dashboard"
+      description="Revisa la conexión e inténtalo de nuevo."
+    >
+      <button dtvButton variant="secondary" type="button" (click)="retry()">Reintentar</button>
+    </dtv-empty-state>
+  </div>
+} @else if (store.current(); as dashboard) {
+  <div class="dtv-editor">
+    <header class="dtv-editor__toolbar">
+      <div class="dtv-editor__lead">
+        <button dtvButton variant="secondary" type="button" (click)="goBack()">Volver</button>
+        <div class="dtv-editor__identity">
+          <p class="dtv-editor__kicker">Editor de dashboard</p>
+          <dtv-input
+            class="dtv-editor__name"
+            label="Nombre del dashboard"
+            [hideLabel]="true"
+            [value]="dashboard.name"
+            (valueChange)="store.updateName($event)"
+          />
+        </div>
+      </div>
+
+      <div class="dtv-editor__actions">
+        @if (store.dirty()) {
+          <dtv-badge>Sin guardar</dtv-badge>
+        } @else if (justSaved()) {
+          <dtv-badge tone="success">Guardado</dtv-badge>
+        }
+        @if (store.saveError()) {
+          <p class="dtv-editor__error" role="alert">{{ store.saveError() }}</p>
+        }
+        <button dtvButton variant="secondary" type="button" (click)="openView()">Ver</button>
+        <button dtvButton variant="secondary" type="button" [disabled]="!store.dirty()" (click)="discard()">
+          Descartar
+        </button>
+        <button
+          dtvButton
+          type="button"
+          [disabled]="!store.dirty()"
+          [loading]="store.status() === 'saving'"
+          (click)="save()"
+        >
+          Guardar
+        </button>
+      </div>
+    </header>
+
+    <dtv-dashboard-filter-bar
+      [presets]="dashboard.filterPresets"
+      [canSavePreset]="true"
+      (savePreset)="store.addFilterPreset($event, filters.value())"
+      (removePreset)="store.removeFilterPreset($event)"
+    />
+
+    <div
+      class="dtv-editor__workspace"
+      [class.dtv-editor__workspace--resizing]="resizing()"
+      [style.--palette-w]="paletteWidth() + 'px'"
+      [style.--config-w]="configWidth() + 'px'"
+    >
+      <dtv-widget-palette [compact]="paletteCompact()" (add)="addWidget($event)" />
+
+      <button
+        class="dtv-editor__gutter"
+        type="button"
+        aria-label="Cambiar ancho de widgets"
+        title="Arrastra para cambiar el ancho. Doble clic para encoger o restaurar."
+        (pointerdown)="startResize('palette', $event)"
+        (pointermove)="onResizeMove($event)"
+        (pointerup)="stopResize()"
+        (pointercancel)="stopResize()"
+        (dblclick)="togglePanel('palette')"
+      ></button>
+
+      <dtv-dashboard-canvas
+        [widgets]="store.widgets()"
+        [selectedId]="store.selectedWidgetId()"
+        [editable]="true"
+        (selectWidget)="store.selectWidget($event)"
+        (duplicateWidget)="store.duplicateWidget($event)"
+        (removeWidget)="store.removeWidget($event)"
+        (layoutChange)="store.touchLayout()"
+        (addWidget)="onPlacedWidget($event)"
+        (explore)="openExplorer($event)"
+      />
+
+      <button
+        class="dtv-editor__gutter"
+        type="button"
+        aria-label="Cambiar ancho de configuración"
+        title="Arrastra para cambiar el ancho. Doble clic para encoger o restaurar."
+        (pointerdown)="startResize('config', $event)"
+        (pointermove)="onResizeMove($event)"
+        (pointerup)="stopResize()"
+        (pointercancel)="stopResize()"
+        (dblclick)="togglePanel('config')"
+      ></button>
+
+      <dtv-widget-config-panel
+        [compact]="configCompact()"
+        [widget]="store.selectedWidget()"
+        (titleChange)="updateTitle($event)"
+        (configChange)="updateConfig($event)"
+      />
+    </div>
+  </div>
+}

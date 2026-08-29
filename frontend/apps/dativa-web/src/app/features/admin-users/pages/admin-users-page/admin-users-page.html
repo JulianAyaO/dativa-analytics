@@ -1,0 +1,163 @@
+<dtv-page-header title="Usuarios" subtitle="Cuentas, roles y estado de acceso.">
+  <button dtvButton type="button" (click)="openCreate()">Nuevo usuario</button>
+</dtv-page-header>
+
+@if (success()) {
+  <p class="dtv-users__success" role="status">{{ success() }}</p>
+}
+
+@if (formMode() === 'create') {
+  <dtv-card class="dtv-users__form-card">
+    <form class="dtv-users__form" novalidate (submit)="onCreate($event)">
+      <h2>Nuevo usuario</h2>
+      <dtv-input label="Nombre" [formField]="createForm.name" />
+      <dtv-input label="Correo" type="email" [formField]="createForm.email" />
+      <dtv-input label="Contraseña" type="password" [hint]="passwordHint" [formField]="createForm.password" />
+      <dtv-select label="Rol de la cuenta" [formField]="createForm.role">
+        <option value="ADMIN">Administrador</option>
+        <option value="ANALYST">Analista</option>
+        <option value="VIEWER">Visualizador</option>
+      </dtv-select>
+      @if (formError()) {
+        <p class="dtv-users__error" role="alert">{{ formError() }}</p>
+      }
+      <div class="dtv-users__form-actions">
+        <button dtvButton variant="secondary" type="button" (click)="cancelForm()">Cancelar</button>
+        <button dtvButton type="submit" [loading]="createForm().submitting()">Crear</button>
+      </div>
+    </form>
+  </dtv-card>
+}
+
+<div class="dtv-users__filters">
+  <dtv-input type="search" label="Buscar" placeholder="Nombre o correo" [value]="search()" (valueChange)="onSearch($event)" />
+  <dtv-select label="Rol" [value]="roleFilter()" (valueChange)="onRoleFilter($event)">
+    <option value="">Todos</option>
+    <option value="ADMIN">Administrador</option>
+    <option value="ANALYST">Analista</option>
+    <option value="VIEWER">Visualizador</option>
+  </dtv-select>
+  <dtv-select label="Estado" [value]="statusFilter()" (valueChange)="onStatusFilter($event)">
+    <option value="all">Todos</option>
+    <option value="active">Activos</option>
+    <option value="inactive">Inactivos</option>
+  </dtv-select>
+</div>
+
+@if (status() === 'loading') {
+  <dtv-loading class="dtv-fill" label="Cargando usuarios" />
+} @else if (status() === 'error') {
+  <dtv-card class="dtv-fill">
+    <dtv-empty-state title="No se pudieron cargar los usuarios" description="Inténtalo de nuevo.">
+      <button dtvButton variant="secondary" type="button" (click)="refresh()">Reintentar</button>
+    </dtv-empty-state>
+  </dtv-card>
+} @else if (users().length === 0) {
+  <dtv-card class="dtv-fill">
+    <dtv-empty-state
+      title="No hay usuarios"
+      description="Prueba otra búsqueda o crea una cuenta nueva."
+    />
+  </dtv-card>
+} @else {
+  <div class="dtv-users__table-wrap">
+    <table>
+      <caption class="dtv-sr-only">Usuarios de la plataforma</caption>
+      <thead>
+        <tr>
+          <th scope="col">Usuario</th>
+          <th scope="col">Rol</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Creado</th>
+          <th scope="col">Último acceso</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr [class.dtv-users__row--open]="isEditing(user)">
+            <td>
+              <div class="dtv-users__person">
+                <span class="dtv-users__avatar" aria-hidden="true">{{ initials(user.name) }}</span>
+                <span>
+                  <strong>{{ user.name }}</strong>
+                  <small>{{ user.email }}</small>
+                </span>
+              </div>
+            </td>
+            <td>{{ roleLabels[user.role] }}</td>
+            <td>
+              <dtv-badge [tone]="user.active ? 'success' : 'neutral'">
+                {{ user.active ? 'Activo' : 'Inactivo' }}
+              </dtv-badge>
+            </td>
+            <td>{{ user.createdAt | date: 'short' }}</td>
+            <td>
+              @if (user.lastLoginAt) {
+                {{ user.lastLoginAt | date: 'short' }}
+              } @else {
+                Sin accesos
+              }
+            </td>
+            <td>
+              @if (isSelf(user)) {
+                <span class="dtv-users__you">Tu cuenta · ajústala en Ajustes</span>
+              } @else {
+                <div class="dtv-users__row-actions">
+                  <button
+                    dtvButton
+                    variant="secondary"
+                    size="sm"
+                    type="button"
+                    [attr.aria-expanded]="isEditing(user)"
+                    [attr.aria-label]="'Editar ' + user.name"
+                    (click)="openEdit(user)"
+                  >
+                    {{ isEditing(user) ? 'Cerrar' : 'Editar' }}
+                  </button>
+                  <button
+                    dtvButton
+                    [variant]="user.active ? 'danger' : 'secondary'"
+                    size="sm"
+                    type="button"
+                    [attr.aria-label]="(user.active ? 'Desactivar ' : 'Activar ') + user.name"
+                    (click)="toggleActive(user)"
+                  >
+                    {{ user.active ? 'Desactivar' : 'Activar' }}
+                  </button>
+                </div>
+              }
+            </td>
+          </tr>
+          @if (isEditing(user)) {
+            <tr class="dtv-users__edit-row">
+              <td colspan="6">
+                <form class="dtv-users__inline" novalidate (submit)="onEdit($event)">
+                  <h2>Editar {{ user.name }}</h2>
+                  <dtv-input label="Nombre" [formField]="editForm.name" />
+                  <dtv-input label="Correo" type="email" [formField]="editForm.email" />
+                  <dtv-select label="Rol" [formField]="editForm.role">
+                    <option value="ADMIN">Administrador</option>
+                    <option value="ANALYST">Analista</option>
+                    <option value="VIEWER">Visualizador</option>
+                  </dtv-select>
+                  <dtv-select label="Estado" [formField]="editForm.active">
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                  </dtv-select>
+                  @if (formError()) {
+                    <p class="dtv-users__error" role="alert">{{ formError() }}</p>
+                  }
+                  <div class="dtv-users__form-actions">
+                    <button dtvButton variant="secondary" type="button" (click)="cancelForm()">Cancelar</button>
+                    <button dtvButton type="submit" [loading]="editForm().submitting()">Guardar</button>
+                  </div>
+                </form>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+}

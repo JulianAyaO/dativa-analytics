@@ -1,0 +1,13 @@
+<div class="dtv-kpi">
+  <button
+    class="dtv-kpi__headline"
+    type="button"
+    title="Ver transacciones en el explorador"
+    aria-label="Ver transacciones en el explorador"
+    (click)="explore.emit(); $event.stopPropagation()"
+  >
+    <p class="dtv-kpi__value">{{ value() }}</p>
+    <dtv-badge [tone]="tone()">{{ change() }} vs periodo anterior</dtv-badge>
+  </button>
+  <dtv-widget-chart [options]="options()" [compact]="true" />
+</div>

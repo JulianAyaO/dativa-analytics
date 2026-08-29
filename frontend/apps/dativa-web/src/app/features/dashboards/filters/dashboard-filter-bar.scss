@@ -1,0 +1,116 @@
+:host {
+  position: relative;
+  z-index: 5;
+  display: block;
+  overflow: visible;
+  border-bottom: 1px solid var(--dtv-color-border);
+  background: var(--dtv-color-surface);
+}
+
+.dtv-filters {
+  display: grid;
+  gap: var(--dtv-space-3);
+  overflow: visible;
+  padding: var(--dtv-space-3) var(--dtv-page-gutter, var(--dtv-space-4));
+}
+
+.dtv-filters--active {
+  box-shadow: inset 0 -2px 0 var(--dtv-color-primary);
+}
+
+.dtv-filters__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dtv-space-3);
+}
+
+.dtv-filters__header > div:first-child,
+.dtv-filters__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--dtv-space-2);
+}
+
+.dtv-filters__header h2 {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dtv-color-text);
+}
+
+.dtv-filters__controls {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--dtv-space-3);
+}
+
+.dtv-filters__controls dtv-select {
+  min-width: 0;
+}
+
+.dtv-filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dtv-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dtv-filters__chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dtv-space-2);
+  min-height: 1.75rem;
+  padding: 0 var(--dtv-space-3);
+  border: 1px solid var(--dtv-color-primary);
+  border-radius: 999px;
+  background: var(--dtv-color-primary-soft);
+  color: var(--dtv-color-text);
+  font-size: 0.75rem;
+}
+
+.dtv-filters__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dtv-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dtv-filters__presets li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.dtv-filters__presets button {
+  min-height: 1.75rem;
+  padding: 0 var(--dtv-space-3);
+  border: 1px solid var(--dtv-color-border);
+  border-radius: 999px;
+  background: var(--dtv-color-surface-muted);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 1280px) {
+  .dtv-filters__controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .dtv-filters__controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .dtv-filters__controls {
+    grid-template-columns: 1fr;
+  }
+}

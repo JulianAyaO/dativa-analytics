@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.dtv-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dtv-space-3);
+  color: var(--dtv-color-text-muted);
+}
+
+.dtv-loading__spinner {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--dtv-color-border-strong);
+  border-top-color: var(--dtv-color-primary);
+  border-radius: 50%;
+  animation: dtv-spin 700ms linear infinite;
+}
+
+@keyframes dtv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

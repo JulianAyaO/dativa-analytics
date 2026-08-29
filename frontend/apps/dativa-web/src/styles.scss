@@ -1,0 +1,48 @@
+@keyframes dtv-page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+dtv-dashboard-list-page,
+dtv-alerts-page,
+dtv-admin-users-page,
+dtv-admin-activity-page,
+dtv-import-page,
+dtv-settings-page,
+dtv-explorer-page,
+dtv-dashboard-view-page,
+dtv-dashboard-editor-page {
+  animation: dtv-page-rise var(--dtv-duration-page) var(--dtv-ease) both;
+}
+
+.dtv-fill {
+  flex: 1 1 0;
+  display: grid;
+  min-height: 18rem;
+}
+
+dtv-card.dtv-fill,
+dtv-loading.dtv-fill {
+  align-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dtv-dashboard-list-page,
+  dtv-alerts-page,
+  dtv-admin-users-page,
+  dtv-admin-activity-page,
+  dtv-import-page,
+  dtv-settings-page,
+  dtv-explorer-page,
+  dtv-dashboard-view-page,
+  dtv-dashboard-editor-page {
+    animation: none;
+  }
+}

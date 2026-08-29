@@ -1,0 +1,16 @@
+<div class="dtv-widget-status" [attr.data-status]="status()" role="status">
+  @switch (status()) {
+    @case ('loading') {
+      <dtv-loading label="Cargando datos" />
+    }
+    @case ('empty') {
+      <p>Este widget no tiene datos para la fuente, métrica y periodo actuales.</p>
+    }
+    @case ('error') {
+      <p>{{ message() || 'No se pudieron cargar los datos del widget.' }}</p>
+      <button dtvButton variant="secondary" size="sm" type="button" (click)="retry.emit()">
+        Reintentar
+      </button>
+    }
+  }
+</div>

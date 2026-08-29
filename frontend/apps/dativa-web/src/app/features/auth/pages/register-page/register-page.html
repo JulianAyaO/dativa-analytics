@@ -1,0 +1,53 @@
+<main class="dtv-login">
+  <dtv-auth-hero
+    headline="Empieza a ver los datos hoy."
+    lead="Crea una cuenta de visualización. Un administrador podrá ampliar tu rol más adelante."
+  />
+
+  <section class="dtv-login__panel">
+    <dtv-theme-toggle class="dtv-login__theme" />
+    <div class="dtv-login__panel-inner">
+      <dtv-card>
+        <form class="dtv-login__form" novalidate (submit)="onSubmit($event)">
+          <header class="dtv-login__header">
+            <p class="dtv-login__kicker">Registro</p>
+            <h2>Crear cuenta</h2>
+            <p>El registro comienza con el rol Visualizador.</p>
+          </header>
+
+          <dtv-input label="Nombre" autocomplete="name" [formField]="registerForm.name" />
+          <dtv-input
+            label="Correo"
+            type="email"
+            autocomplete="username"
+            [formField]="registerForm.email"
+          />
+          <dtv-input
+            label="Contraseña"
+            type="password"
+            autocomplete="new-password"
+            [hint]="passwordHint"
+            [formField]="registerForm.password"
+          />
+          <dtv-input
+            label="Confirmar contraseña"
+            type="password"
+            autocomplete="new-password"
+            [formField]="registerForm.passwordConfirm"
+          />
+
+          @if (registerError()) {
+            <p class="dtv-login__error" role="alert">{{ registerError() }}</p>
+          }
+
+          <button dtvButton size="lg" type="submit" [loading]="busy()">Crear cuenta</button>
+        </form>
+      </dtv-card>
+
+      <p class="dtv-login__switch">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login">Iniciar sesión</a>
+      </p>
+    </div>
+  </section>
+</main>

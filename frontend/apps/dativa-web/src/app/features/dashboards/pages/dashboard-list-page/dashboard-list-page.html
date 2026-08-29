@@ -1,0 +1,176 @@
+<dtv-page-header
+  title="Dashboards"
+  subtitle="Crea tableros para seguir ventas, regiones y desempeño comercial."
+>
+  @if (auth.canEdit()) {
+    <button dtvButton type="button" (click)="openCreate()">Nuevo dashboard</button>
+  }
+</dtv-page-header>
+
+@if (creating()) {
+  <div
+    class="dtv-catalog__overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="nuevo-dashboard-titulo"
+  >
+    <form class="dtv-catalog__stage" novalidate (submit)="onCreate($event)">
+      <p class="dtv-catalog__eyebrow">Nuevo tablero</p>
+      <h2 id="nuevo-dashboard-titulo">Crear dashboard</h2>
+      <p class="dtv-catalog__lead">
+        Dale un nombre claro. Después podrás añadir widgets, filtros y el layout del lienzo.
+      </p>
+      <dtv-input label="Nombre" [formField]="createForm.name" />
+      <dtv-input label="Descripción" [formField]="createForm.description" />
+      @if (createError()) {
+        <p class="dtv-catalog__error" role="alert">{{ createError() }}</p>
+      }
+      <div class="dtv-catalog__form-actions">
+        <button dtvButton variant="secondary" type="button" (click)="cancelCreate()">Cancelar</button>
+        <button dtvButton type="submit" [loading]="createForm().submitting()">Crear y editar</button>
+      </div>
+    </form>
+  </div>
+}
+
+@if (status() === 'loading') {
+  <dtv-loading class="dtv-fill" label="Cargando dashboards" />
+} @else if (status() === 'error') {
+  <dtv-card class="dtv-fill">
+    <dtv-empty-state
+      title="No se pudieron cargar los dashboards"
+      description="Inténtalo de nuevo en unos segundos."
+    >
+      <button dtvButton variant="secondary" type="button" (click)="refresh()">Reintentar</button>
+    </dtv-empty-state>
+  </dtv-card>
+} @else if (summaries().length === 0) {
+  <dtv-card class="dtv-fill">
+    <dtv-empty-state
+      title="Todavía no hay dashboards"
+      [description]="
+        auth.canEdit()
+          ? 'Crea un tablero, añade widgets y guarda el layout cuando esté listo.'
+          : 'Cuando un analista publique un dashboard, aparecerá aquí.'
+      "
+    />
+  </dtv-card>
+} @else {
+  <div class="dtv-catalog__toolbar">
+    @if (canReorder()) {
+      <p>Arrastra una tarjeta para ponerla antes o después de otra.</p>
+    } @else {
+      <p>Cambia el orden de la lista o destaca un tablero para darle más peso.</p>
+    }
+    <dtv-select label="Ordenar" [value]="sort()" (valueChange)="onSort($event)">
+      @for (option of sorts; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </dtv-select>
+  </div>
+
+  <ul
+    class="dtv-catalog__list"
+    [class.dtv-catalog__list--manual]="canReorder()"
+    aria-label="Dashboards"
+  >
+    @for (item of visible(); track item.id) {
+      <li
+        [attr.draggable]="canReorder() ? true : null"
+        [class.dtv-catalog__card-wrap--dragging]="draggingId() === item.id"
+        (dragstart)="onDragStart(item.id, $event)"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop(item.id, $event)"
+        (dragend)="onDragEnd()"
+      >
+        <ng-container *ngTemplateOutlet="cardTpl; context: { $implicit: item }" />
+      </li>
+    }
+  </ul>
+}
+
+<ng-template #cardTpl let-item>
+  <dtv-card class="dtv-catalog__card" [class.dtv-catalog__card--featured]="item.featured">
+    <article class="dtv-catalog__item">
+      <span class="dtv-catalog__accent" aria-hidden="true"></span>
+      @if (item.featured) {
+        <span class="dtv-catalog__ribbon" aria-hidden="true">★</span>
+      }
+      <header class="dtv-catalog__head">
+        <div class="dtv-catalog__badges">
+          @if (canReorder()) {
+            <span class="dtv-catalog__grip" aria-hidden="true"></span>
+          }
+          @if (item.featured) {
+            <dtv-badge>En portada</dtv-badge>
+          }
+        </div>
+        <h2>{{ item.name }}</h2>
+        <p>{{ item.description || 'Sin descripción. Ábrelo para ver el tablero.' }}</p>
+      </header>
+      <dl class="dtv-catalog__stats">
+        <div>
+          <dt>Widgets</dt>
+          <dd>{{ item.widgetCount }}</dd>
+        </div>
+        <div>
+          <dt>Aperturas</dt>
+          <dd>{{ item.openCount }}</dd>
+        </div>
+        <div>
+          <dt>Actualizado</dt>
+          <dd>{{ formatUpdatedAt(item.updatedAt) }}</dd>
+        </div>
+      </dl>
+      <div class="dtv-catalog__actions">
+        <button
+          dtvButton
+          variant="secondary"
+          type="button"
+          [attr.aria-label]="'Abrir ' + item.name"
+          (click)="openView(item.id)"
+        >
+          Abrir
+        </button>
+        @if (auth.canEdit()) {
+          <button
+            dtvButton
+            variant="secondary"
+            type="button"
+            [attr.aria-label]="'Editar ' + item.name"
+            (click)="openEditor(item.id)"
+          >
+            Editar
+          </button>
+          <button
+            dtvButton
+            variant="danger"
+            type="button"
+            [attr.aria-label]="'Eliminar ' + item.name"
+            (click)="remove(item)"
+          >
+            Eliminar
+          </button>
+          <button
+            dtvButton
+            variant="secondary"
+            type="button"
+            [attr.aria-label]="'Duplicar ' + item.name"
+            (click)="duplicate(item)"
+          >
+            Duplicar
+          </button>
+          <button
+            dtvButton
+            variant="ghost"
+            type="button"
+            [attr.aria-label]="(item.featured ? 'Quitar destacado de ' : 'Destacar ') + item.name"
+            (click)="toggleFeatured(item)"
+          >
+            {{ item.featured ? 'Quitar de portada' : 'Destacar' }}
+          </button>
+        }
+      </div>
+    </article>
+  </dtv-card>
+</ng-template>

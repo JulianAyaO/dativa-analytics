@@ -1,0 +1,77 @@
+<main class="dtv-login">
+  <dtv-auth-hero
+    headline="El negocio, en un solo lienzo."
+    lead="Consulta, construye y personaliza dashboards comerciales con una experiencia pensada para analistas."
+  />
+
+  <section class="dtv-login__panel">
+    <dtv-theme-toggle class="dtv-login__theme" />
+    <div class="dtv-login__panel-inner">
+      <dtv-card>
+        <form class="dtv-login__form" novalidate (submit)="onSubmit($event)">
+          <header class="dtv-login__header">
+            <p class="dtv-login__kicker">Acceso al espacio de trabajo</p>
+            <h2>Iniciar sesión</h2>
+            <p>Entra con tu correo o elige una cuenta de demostración.</p>
+          </header>
+
+          <dtv-input
+            label="Correo"
+            type="email"
+            autocomplete="username"
+            [formField]="loginForm.email"
+          />
+
+          <dtv-input
+            label="Contraseña"
+            type="password"
+            autocomplete="current-password"
+            [formField]="loginForm.password"
+          />
+
+          @if (loginError()) {
+            <p class="dtv-login__error" role="alert">{{ loginError() }}</p>
+          }
+
+          <button dtvButton size="lg" type="submit" [loading]="loginForm().submitting()" [disabled]="busy()">
+            Entrar
+          </button>
+        </form>
+      </dtv-card>
+
+      <p class="dtv-login__switch">
+        ¿No tienes cuenta?
+        <a routerLink="/register">Crear cuenta</a>
+      </p>
+
+      <aside class="dtv-login__demos" aria-label="Cuentas demostrativas">
+        <div class="dtv-login__divider">
+          <span>Cuentas demostrativas</span>
+        </div>
+        <p class="dtv-login__demo-note">
+          Contraseña compartida <code>Dativa123!</code>
+        </p>
+        <div class="dtv-login__demo-list">
+          @for (account of demos; track account.email) {
+            <button
+              dtvButton
+              variant="secondary"
+              type="button"
+              [attr.aria-label]="'Entrar como ' + roleLabels[account.user.role] + ' (' + account.email + ')'"
+              [loading]="demoEmail() === account.email"
+              [disabled]="busy() && demoEmail() !== account.email"
+              (click)="loginAs(account)"
+            >
+              <span class="dtv-login__avatar" aria-hidden="true">{{ initials(account.user.name) }}</span>
+              <span class="dtv-login__demo-copy">
+                <span class="dtv-login__demo-role">{{ roleLabels[account.user.role] }}</span>
+                <span class="dtv-login__demo-email">{{ account.email }}</span>
+                <span class="dtv-login__demo-hint">{{ roleHints[account.user.role] }}</span>
+              </span>
+            </button>
+          }
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>

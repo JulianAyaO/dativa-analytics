@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+
+# Angular / TypeScript build
+dist/
+out-tsc/
+.angular/
+coverage/
+*.tsbuildinfo
+
+# Maven / Java
+target/
+*.class
+hs_err_pid*
+replay_pid*
+
+# Maven wrapper jar is not used (distributionType=only-script).
+# Keep mvnw, mvnw.cmd and .mvn/wrapper/maven-wrapper.properties tracked.
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Playwright
+**/test-results/
+**/playwright-report/
+**/blob-report/
+**/playwright/.cache/
+
+# Logs and caches
+*.log
+npm-debug.log*
+yarn-error.log*
+.sass-cache/
+tmp/
+
+# Environment and secrets (never commit real credentials)
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.jks
+*.keystore
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+*.sublime-workspace
+.history/
+
+# Cursor (local agent files if they appear in the repo)
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db

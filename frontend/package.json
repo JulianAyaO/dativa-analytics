@@ -1,0 +1,45 @@
+{
+  "name": "dativa",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve dativa-web --open",
+    "build": "ng build dativa-web",
+    "build:ui": "ng build dativa-ui",
+    "watch": "ng build dativa-web --watch --configuration development",
+    "test": "ng test dativa-web",
+    "test:ui": "ng test dativa-ui",
+    "e2e": "playwright test --config=e2e/playwright.config.ts",
+    "e2e:ui": "playwright test --config=e2e/playwright.config.ts --ui"
+  },
+  "private": true,
+  "packageManager": "npm@10.9.8",
+  "dependencies": {
+    "@angular/aria": "^22.1.3",
+    "@angular/cdk": "^22.1.3",
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "@angular/router": "^22.1.0",
+    "@stomp/stompjs": "^7.3.0",
+    "angular-gridster2": "^22.0.0",
+    "echarts": "^6.1.0",
+    "ngx-echarts": "^22.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.5",
+    "@angular/cli": "^22.1.5",
+    "@angular/compiler-cli": "^22.1.0",
+    "@playwright/test": "^1.62.1",
+    "jsdom": "^28.0.0",
+    "ng-packagr": "^22.1.0",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8"
+  }
+}

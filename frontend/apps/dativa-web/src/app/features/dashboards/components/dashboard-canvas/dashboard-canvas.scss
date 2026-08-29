@@ -1,0 +1,41 @@
+:host {
+  display: block;
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+}
+
+.dtv-canvas {
+  position: relative;
+  height: 100%;
+  min-height: 22rem;
+}
+
+.dtv-canvas__empty {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+gridster {
+  background: transparent;
+  min-height: 100%;
+}
+
+gridster-item {
+  background: transparent;
+  border-radius: var(--dtv-radius-md);
+}
+
+dtv-widget-host {
+  display: block;
+  height: 100%;
+}
+
+:host ::ng-deep .gridster-item-resizable-handler {
+  background: color-mix(in srgb, var(--dtv-color-primary) 35%, transparent);
+}

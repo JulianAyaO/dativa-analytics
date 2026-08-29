@@ -1,0 +1,23 @@
+<section class="dtv-palette" aria-label="Paleta de widgets">
+  <h2>Widgets</h2>
+  @if (!compact()) {
+    <p>Añade un bloque al lienzo. Luego configúralo en el panel derecho.</p>
+  }
+  <ul>
+    @for (item of catalog; track item.type) {
+      <li>
+        <button
+          type="button"
+          [disabled]="disabled()"
+          [attr.aria-label]="'Añadir widget ' + item.label"
+          (click)="addWidget(item.type)"
+        >
+          <strong>{{ item.label }}</strong>
+          @if (!compact()) {
+            <span>{{ item.description }}</span>
+          }
+        </button>
+      </li>
+    }
+  </ul>
+</section>

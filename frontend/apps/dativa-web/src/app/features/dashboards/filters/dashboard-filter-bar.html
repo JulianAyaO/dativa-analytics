@@ -1,0 +1,110 @@
+<section
+  class="dtv-filters"
+  [class.dtv-filters--active]="filters.active()"
+  [attr.aria-label]="ariaLabel()"
+>
+  <header class="dtv-filters__header">
+    <div>
+      <h2>Filtros</h2>
+      @if (filters.active()) {
+        <dtv-badge tone="info">{{ filters.activeCount() }} activos</dtv-badge>
+      }
+    </div>
+    <div class="dtv-filters__header-actions">
+      @if (canSavePreset() && filters.active() && presets().length < 3) {
+        <button dtvButton variant="ghost" type="button" (click)="onSavePreset()">
+          Guardar vista
+        </button>
+      }
+      <button
+        dtvButton
+        variant="secondary"
+        type="button"
+        [disabled]="!filters.active()"
+        (click)="filters.reset()"
+      >
+        Restablecer
+      </button>
+    </div>
+  </header>
+
+  @if (presets().length > 0) {
+    <ul class="dtv-filters__presets" aria-label="Vistas guardadas">
+      @for (preset of presets(); track preset.id) {
+        <li>
+          <button type="button" (click)="applyPreset(preset)">{{ preset.name }}</button>
+          @if (canSavePreset()) {
+            <button type="button" [attr.aria-label]="'Eliminar vista ' + preset.name" (click)="removePreset.emit(preset.id)">
+              ×
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="dtv-filters__controls">
+    <dtv-select
+      label="Fecha"
+      [value]="filters.value().period"
+      (valueChange)="onSelect('period', $event)"
+    >
+      <option value="">{{ periodEmptyLabel() }}</option>
+      @for (option of periods; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </dtv-select>
+
+    <dtv-filter-picker
+      label="Región"
+      emptyLabel="Todas"
+      [value]="filters.value().region"
+      [options]="fields.region"
+      [open]="openKey() === 'region'"
+      (openChange)="onOpen('region', $event)"
+      (valueChange)="onSelect('region', $event)"
+    />
+    <dtv-filter-picker
+      label="Categoría"
+      emptyLabel="Todas"
+      [value]="filters.value().category"
+      [options]="fields.category"
+      [open]="openKey() === 'category'"
+      (openChange)="onOpen('category', $event)"
+      (valueChange)="onSelect('category', $event)"
+    />
+    <dtv-filter-picker
+      label="Producto"
+      emptyLabel="Todos"
+      [value]="filters.value().product"
+      [options]="fields.product"
+      [open]="openKey() === 'product'"
+      (openChange)="onOpen('product', $event)"
+      (valueChange)="onSelect('product', $event)"
+    />
+    <dtv-filter-picker
+      label="Vendedor"
+      emptyLabel="Todos"
+      [value]="filters.value().seller"
+      [options]="fields.seller"
+      [open]="openKey() === 'seller'"
+      (openChange)="onOpen('seller', $event)"
+      (valueChange)="onSelect('seller', $event)"
+    />
+  </div>
+
+  @if (filters.chips(); as chips) {
+    @if (chips.length > 0) {
+      <ul class="dtv-filters__chips" aria-label="Filtros activos">
+        @for (chip of chips; track chip.label) {
+          <li>
+            <button type="button" [attr.aria-label]="'Quitar filtro ' + chip.label" (click)="filters.clear(chip.key, chip.value)">
+              {{ chip.label }}
+              <span aria-hidden="true">×</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

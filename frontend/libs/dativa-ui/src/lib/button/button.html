@@ -1,0 +1,7 @@
+@if (loading()) {
+  <span class="dtv-button__spinner" aria-hidden="true"></span>
+}
+<span class="dtv-button__content" [class.dtv-button__content--hidden]="loading()">
+  <ng-content />
+</span>
+<span class="dtv-sr-only" [hidden]="!loading()">Cargando</span>

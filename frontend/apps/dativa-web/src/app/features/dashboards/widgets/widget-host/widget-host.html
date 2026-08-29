@@ -1,0 +1,52 @@
+<article class="dtv-widget" [class.dtv-widget--selected]="selected()" (click)="onSelect()">
+  <header class="dtv-widget__header">
+    @if (editable()) {
+      <span
+        class="dtv-widget__drag"
+        role="button"
+        tabindex="0"
+        [attr.aria-label]="'Mover ' + widget().title"
+        (click)="onSelect(); $event.stopPropagation()"
+      >
+        ⋮⋮
+      </span>
+    }
+
+    <button class="dtv-widget__title" type="button" (click)="onSelect()">
+      <span>{{ widget().title }}</span>
+      <small>{{ definition()?.label }}</small>
+    </button>
+
+    @if (editable()) {
+      <div class="dtv-widget__menu">
+        <button
+          class="dtv-widget__menu-trigger"
+          type="button"
+          ngMenuTrigger
+          [menu]="actions"
+          [attr.aria-label]="'Acciones de ' + widget().title"
+          (click)="$event.stopPropagation()"
+        >
+          ⋯
+        </button>
+        <div
+          class="dtv-widget__menu-panel"
+          ngMenu
+          #actions="ngMenu"
+          [hidden]="!actions.visible()"
+        >
+          <button type="button" ngMenuItem value="duplicate" (click)="duplicate.emit(widget().id)">
+            Duplicar
+          </button>
+          <button type="button" ngMenuItem value="remove" (click)="remove.emit(widget().id)">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    }
+  </header>
+
+  <div class="dtv-widget__body">
+    <dtv-widget-outlet [widget]="widget()" [live]="!editable()" (explore)="explore.emit($event)" />
+  </div>
+</article>

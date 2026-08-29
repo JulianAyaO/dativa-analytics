@@ -1,0 +1,197 @@
+<div class="dtv-import__steps" aria-label="Pasos de importación">
+  @for (item of steps; track item.id) {
+    <span
+      class="dtv-import__step"
+      [class.dtv-import__step--current]="step() === item.id"
+      [class.dtv-import__step--done]="isDone(item.id)"
+      [attr.aria-current]="step() === item.id ? 'step' : null"
+    >
+      {{ item.label }}
+    </span>
+  }
+</div>
+
+@if (step() === 'file' || step() === 'preview') {
+  <div class="dtv-import__stage">
+    <dtv-card>
+      <label
+        class="dtv-import__drop"
+        [class.dtv-import__drop--on]="dragging()"
+        (dragover)="$event.preventDefault(); onDrag(true)"
+        (dragleave)="onDrag(false)"
+        (drop)="onDrop($event)"
+      >
+        <input class="dtv-sr-only" type="file" accept=".csv,.xls,.xlsx" (change)="onFile($event)" />
+        <strong>Arrastra un archivo o haz clic para seleccionarlo</strong>
+        <span>CSV o Excel · máximo 5 MB</span>
+      </label>
+
+      @if (file(); as current) {
+        <p class="dtv-import__file">{{ current.name }} · {{ fileSize(current) }}</p>
+      }
+      @if (fileError()) {
+        <p class="dtv-import__error" role="alert">{{ fileError() }}</p>
+      }
+    </dtv-card>
+
+    @if (step() === 'preview' && table().headers.length > 0) {
+      <dtv-card>
+        <h2>Vista previa</h2>
+        <p>{{ table().rows.length }} filas detectadas. Se muestran las primeras 8.</p>
+        @if (table().sheets.length > 1) {
+          <dtv-select
+            class="dtv-import__sheet"
+            label="Hoja"
+            [value]="table().sheet"
+            (valueChange)="onSheet($event)"
+          >
+            @for (name of table().sheets; track name) {
+              <option [value]="name">{{ name }}</option>
+            }
+          </dtv-select>
+        }
+        <div class="dtv-import__table">
+          <table>
+            <thead>
+              <tr>
+                @for (header of table().headers; track header) {
+                  <th scope="col">{{ header }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of previewRows(); track $index) {
+                <tr>
+                  @for (cell of row; track $index) {
+                    <td>{{ cell }}</td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <button dtvButton type="button" (click)="goDataset()">Continuar</button>
+      </dtv-card>
+    }
+  </div>
+}
+
+@if (step() === 'dataset') {
+  <dtv-card class="dtv-fill">
+    <h2>Selecciona el dataset</h2>
+    <p>Elige si este archivo se importará como Ventas o Pedidos. Cada destino usa su propio esquema.</p>
+    <div class="dtv-import__choices">
+      @for (item of schemas; track item.dataset) {
+        <button
+          type="button"
+          class="dtv-import__choice"
+          [class.dtv-import__choice--on]="dataset() === item.dataset"
+          [attr.aria-pressed]="dataset() === item.dataset"
+          (click)="onDataset(item.dataset)"
+        >
+          <strong>{{ item.name }}</strong>
+          <span>{{ item.description }}</span>
+          <small>Obligatorio: {{ requiredLabels(item) }}</small>
+        </button>
+      }
+    </div>
+    <div class="dtv-import__actions">
+      <button dtvButton variant="secondary" type="button" (click)="goPreview()">Atrás</button>
+      <button dtvButton type="button" (click)="goMapping()">Mapear columnas</button>
+    </div>
+  </dtv-card>
+}
+
+@if (step() === 'mapping') {
+  <dtv-card class="dtv-fill">
+    <h2>Mapear columnas</h2>
+    <p>
+      Dativa sugiere coincidencias para
+      <strong>{{ schema().name }}</strong>
+      . Revisa el mapeo antes de importar. Las columnas que no necesites pueden quedar en
+      <strong>Ignorar</strong>.
+    </p>
+    <div class="dtv-import__map">
+      <div class="dtv-import__map-head">
+        <span>Columna del archivo</span>
+        <span>Campo de {{ schema().name }}</span>
+      </div>
+      @for (header of table().headers; track header) {
+        <div class="dtv-import__map-row">
+          <span class="dtv-import__map-source">{{ header }}</span>
+          <dtv-select [value]="mapping()[header] ?? ''" (valueChange)="setColumnMapping(header, $event)">
+            <option value="">Ignorar</option>
+            @for (field of schema().fields; track field.id) {
+              <option [value]="field.id">{{ field.label }}{{ field.required ? ' *' : '' }}</option>
+            }
+          </dtv-select>
+        </div>
+      }
+    </div>
+    @if (ignoredCount() > 0) {
+      <p class="dtv-import__hint">{{ ignoredCount() }} columna(s) se ignorarán y no impedirán la importación.</p>
+    }
+    @if (mappingError(); as error) {
+      <p class="dtv-import__error" role="alert">{{ error }}</p>
+    }
+    <div class="dtv-import__actions">
+      <button dtvButton variant="secondary" type="button" (click)="goDataset()">Atrás</button>
+      <button dtvButton type="button" [disabled]="!!mappingError()" (click)="goValidation()">Validar</button>
+    </div>
+  </dtv-card>
+}
+
+@if (step() === 'validation' && validated(); as current) {
+  <dtv-card class="dtv-fill">
+    <h2>Revisar y confirmar</h2>
+    <p>Confirma que el archivo se importará como {{ schema().name }} antes de continuar.</p>
+    @if (current.missingMessage) {
+      <p class="dtv-import__error" role="alert">{{ current.missingMessage }}</p>
+    }
+    @if (current.duplicates > 0) {
+      <p class="dtv-import__warn" role="status">
+        Hay {{ current.duplicates }} fila(s) duplicada(s). No se importarán para no inflar las métricas.
+      </p>
+    }
+    @if (current.valid.length === 0 && current.duplicates > 0 && !current.missingMessage) {
+      <p class="dtv-import__error" role="alert">
+        No hay filas nuevas que importar como {{ schema().name }}. Todas coinciden con datos que ya están en Dativa o se repiten en el archivo.
+      </p>
+    }
+    <ul class="dtv-import__summary">
+      <li>Filas detectadas: {{ table().rows.length }}</li>
+      <li>Filas nuevas: {{ current.valid.length }}</li>
+      <li>Duplicadas en el archivo: {{ current.duplicatesInFile }}</li>
+      <li>Ya existían: {{ current.alreadyImported }}</li>
+      <li>Filas con errores: {{ errorCount() }}</li>
+    </ul>
+    @if (current.issues.length > 0) {
+      <button dtvButton variant="secondary" type="button" (click)="downloadErrors()">
+        Descargar omitidas y errores
+      </button>
+    }
+    @if (commitError()) {
+      <p class="dtv-import__error" role="alert">{{ commitError() }}</p>
+    }
+    <div class="dtv-import__actions">
+      <button dtvButton variant="secondary" type="button" (click)="goMapping()">Atrás</button>
+      <button
+        dtvButton
+        type="button"
+        [disabled]="current.valid.length === 0 || !!current.missingMessage"
+        [loading]="committing()"
+        (click)="commit()"
+      >
+        Importar {{ current.valid.length }} filas
+      </button>
+    </div>
+  </dtv-card>
+}
+
+@if (step() === 'result' && result(); as current) {
+  <dtv-card class="dtv-fill">
+    <dtv-empty-state title="Importación completada" [description]="resultCopy(current)">
+      <button dtvButton type="button" (click)="reset()">Nueva importación</button>
+    </dtv-empty-state>
+  </dtv-card>
+}
