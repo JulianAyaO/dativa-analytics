@@ -20,7 +20,7 @@ Una aplicación full stack de analítica para equipos comerciales: dashboards co
 
 Dativa concentra el análisis de **Ventas** y **Pedidos**: tableros editables, un explorador tabular, importación guiada y alertas, con roles de administrador, analista y visualizador.
 
-El frontend es el foco del portafolio: Angular 22 zoneless con Signals y un design system propio (`@dativa/ui`). Funciona completa en mock. El backend Spring Boot replica el mismo contrato analítico sobre PostgreSQL cuando se quiere persistencia real.
+El frontend es el foco del proyecto: Angular 22 zoneless con Signals y un design system propio (`@dativa/ui`). Funciona completa en mock. El backend Spring Boot replica el mismo contrato analítico sobre PostgreSQL cuando se quiere persistencia real.
 
 ## Características
 
