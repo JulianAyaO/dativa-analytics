@@ -53,6 +53,9 @@ tmp/
 # Cursor (local agent files if they appear in the repo)
 .cursor/
 
+# Cloudflare Wrangler
+.wrangler/
+
 # OS
 .DS_Store
 Thumbs.db
