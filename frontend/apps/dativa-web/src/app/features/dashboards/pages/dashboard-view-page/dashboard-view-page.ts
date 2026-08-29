@@ -10,6 +10,9 @@ import { DashboardFilterBar } from '../../filters/dashboard-filter-bar';
 import { ExplorerQuery, explorerQueryParams } from '../../../explorer/explorer-query';
 import { TransactionApi } from '../../../explorer/data/transaction.api';
 import { DEFAULT_EXPLORER_COLUMNS } from '../../../explorer/explorer-columns';
+import { downloadBlob, EXCEL_MIME, toArrayBuffer } from '../../../explorer/data/transaction-export';
+import { WidgetQueryService } from '../../widgets/query/widget-query.service';
+import { dashboardExportFileName, dashboardToExcel } from '../../widgets/query/dashboard-export';
 
 @Component({
   selector: 'dtv-dashboard-view-page',
@@ -22,6 +25,7 @@ import { DEFAULT_EXPLORER_COLUMNS } from '../../../explorer/explorer-columns';
 export class DashboardViewPage {
   private readonly api = inject(DashboardApi);
   private readonly transactions = inject(TransactionApi);
+  private readonly queries = inject(WidgetQueryService);
   private readonly router = inject(Router);
   protected readonly filters = inject(DashboardFilterStore);
   protected readonly auth = inject(AuthStore);
@@ -31,6 +35,7 @@ export class DashboardViewPage {
   protected readonly status = signal<'loading' | 'ready' | 'missing' | 'error'>('loading');
   protected readonly dashboard = signal<Dashboard | null>(null);
   protected readonly exporting = signal(false);
+  protected readonly exportingDashboard = signal(false);
 
   constructor() {
     effect(() => {
@@ -77,6 +82,22 @@ export class DashboardViewPage {
       );
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  protected async exportDashboard(): Promise<void> {
+    const dashboard = this.dashboard();
+    if (!dashboard || this.exportingDashboard()) {
+      return;
+    }
+    this.exportingDashboard.set(true);
+    try {
+      const bytes = await dashboardToExcel(dashboard, this.filters.value(), (query) =>
+        this.queries.execute(query),
+      );
+      downloadBlob(new Blob([toArrayBuffer(bytes)], { type: EXCEL_MIME }), dashboardExportFileName(dashboard.name));
+    } finally {
+      this.exportingDashboard.set(false);
     }
   }
 

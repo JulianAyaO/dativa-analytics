@@ -7,34 +7,117 @@ export interface ExcelCell {
   value: string | number | Date;
 }
 
+export interface ExcelImage {
+  png: Uint8Array;
+  widthPx: number;
+  heightPx: number;
+}
+
+export interface ExcelSheet {
+  name: string;
+  headers: readonly string[];
+  rows: readonly ExcelCell[][];
+  widths: readonly number[];
+  image?: ExcelImage;
+}
+
 export function writeStyledWorkbook(
   sheetName: string,
   headers: readonly string[],
   rows: readonly ExcelCell[][],
   widths: readonly number[],
 ): Uint8Array {
-  const lastCol = columnLetter(Math.max(headers.length, 1) - 1);
-  const lastRow = Math.max(rows.length + 1, 1);
-  const files = [
-    { name: '[Content_Types].xml', data: utf8(contentTypes()) },
+  return writeStyledSheets([{ name: sheetName, headers, rows, widths }]);
+}
+
+export function writeStyledSheets(input: readonly ExcelSheet[]): Uint8Array {
+  const sheets = uniqueSheets(input.length ? input : [{ name: 'Hoja1', headers: [''], rows: [], widths: [14] }]);
+  const images: Array<{ sheetIndex: number; imageIndex: number; sheet: ExcelSheet }> = [];
+  sheets.forEach((sheetSpec, sheetIndex) => {
+    if (sheetSpec.image?.png.length) {
+      images.push({ sheetIndex, imageIndex: images.length + 1, sheet: sheetSpec });
+    }
+  });
+  const files: { name: string; data: Uint8Array }[] = [
+    { name: '[Content_Types].xml', data: utf8(contentTypes(sheets.length, images.length)) },
     { name: '_rels/.rels', data: utf8(packageRels()) },
-    { name: 'xl/workbook.xml', data: utf8(workbook(sheetName)) },
-    { name: 'xl/_rels/workbook.xml.rels', data: utf8(workbookRels()) },
+    { name: 'xl/workbook.xml', data: utf8(workbookXml(sheets)) },
+    { name: 'xl/_rels/workbook.xml.rels', data: utf8(workbookRels(sheets.length)) },
     { name: 'xl/styles.xml', data: utf8(styles()) },
-    { name: 'xl/worksheets/sheet1.xml', data: utf8(sheet(headers, rows, widths, lastCol, lastRow)) },
   ];
+  sheets.forEach((sheetSpec, index) => {
+    const lastCol = columnLetter(Math.max(sheetSpec.headers.length, 1) - 1);
+    const lastRow = Math.max(sheetSpec.rows.length + 1, 1);
+    const image = images.find((item) => item.sheetIndex === index);
+    files.push({
+      name: `xl/worksheets/sheet${index + 1}.xml`,
+      data: utf8(sheet(sheetSpec.headers, sheetSpec.rows, sheetSpec.widths, lastCol, lastRow, index === 0, Boolean(image))),
+    });
+    if (image && sheetSpec.image) {
+      files.push({
+        name: `xl/worksheets/_rels/sheet${index + 1}.xml.rels`,
+        data: utf8(sheetDrawingRels(image.imageIndex)),
+      });
+      files.push({
+        name: `xl/drawings/drawing${image.imageIndex}.xml`,
+        data: utf8(drawingImageXml(image.imageIndex, lastRow, sheetSpec.image)),
+      });
+      files.push({
+        name: `xl/drawings/_rels/drawing${image.imageIndex}.xml.rels`,
+        data: utf8(drawingImageRels(image.imageIndex)),
+      });
+      files.push({
+        name: `xl/media/image${image.imageIndex}.png`,
+        data: sheetSpec.image.png,
+      });
+    }
+  });
   return zipStore(files);
 }
 
-function contentTypes(): string {
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
-  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
-  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
-  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
-</Types>`;
+function uniqueSheets(input: readonly ExcelSheet[]): ExcelSheet[] {
+  const used = new Set<string>();
+  return input.map((sheetSpec, index) => {
+    const base = sanitizeSheetName(sheetSpec.name, index);
+    let name = base;
+    let suffix = 2;
+    while (used.has(name.toLowerCase())) {
+      const extra = ` (${suffix})`;
+      name = `${base.slice(0, Math.max(1, 31 - extra.length))}${extra}`;
+      suffix += 1;
+    }
+    used.add(name.toLowerCase());
+    return { ...sheetSpec, name };
+  });
+}
+
+function sanitizeSheetName(value: string, index: number): string {
+  const cleaned = value.replace(/[:\\/?*[\]]/g, ' ').replace(/\s+/g, ' ').trim();
+  return (cleaned || `Hoja ${index + 1}`).slice(0, 31);
+}
+
+function contentTypes(sheetCount: number, imageCount: number): string {
+  const parts = [
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">',
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>',
+    '<Default Extension="xml" ContentType="application/xml"/>',
+    '<Default Extension="png" ContentType="image/png"/>',
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>',
+    '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>',
+  ];
+  for (let index = 1; index <= sheetCount; index += 1) {
+    parts.push(
+      `<Override PartName="/xl/worksheets/sheet${index}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`,
+    );
+  }
+  for (let index = 1; index <= imageCount; index += 1) {
+    parts.push(
+      `<Override PartName="/xl/drawings/drawing${index}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>`,
+    );
+  }
+  parts.push('</Types>');
+  return parts.join('');
 }
 
 function packageRels(): string {
@@ -44,20 +127,30 @@ function packageRels(): string {
 </Relationships>`;
 }
 
-function workbook(sheetName: string): string {
+function workbookXml(sheets: readonly ExcelSheet[]): string {
+  const items = sheets
+    .map(
+      (sheetSpec, index) =>
+        `<sheet name="${xml(sheetSpec.name)}" sheetId="${index + 1}" r:id="rId${index + 1}"/>`,
+    )
+    .join('');
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-  <sheets>
-    <sheet name="${xml(sheetName)}" sheetId="1" r:id="rId1"/>
-  </sheets>
+  <workbookPr/>
+  <sheets>${items}</sheets>
 </workbook>`;
 }
 
-function workbookRels(): string {
+function workbookRels(sheetCount: number): string {
+  const sheets = Array.from(
+    { length: sheetCount },
+    (_, index) =>
+      `<Relationship Id="rId${index + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${index + 1}.xml"/>`,
+  ).join('');
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
-  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+  ${sheets}
+  <Relationship Id="rId${sheetCount + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
 </Relationships>`;
 }
 
@@ -136,6 +229,8 @@ function sheet(
   widths: readonly number[],
   lastCol: string,
   lastRow: number,
+  selected: boolean,
+  hasDrawing: boolean,
 ): string {
   const out: string[] = [];
   out.push(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`);
@@ -143,7 +238,7 @@ function sheet(
     `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">`,
   );
   out.push(`<dimension ref="A1:${lastCol}${lastRow}"/>`);
-  out.push(`<sheetViews><sheetView tabSelected="1" workbookViewId="0">`);
+  out.push(`<sheetViews><sheetView${selected ? ' tabSelected="1"' : ''} workbookViewId="0">`);
   out.push(`<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>`);
   out.push(`<selection pane="bottomLeft" activeCell="A2" sqref="A2"/>`);
   out.push(`</sheetView></sheetViews>`);
@@ -170,8 +265,74 @@ function sheet(
   out.push('</sheetData>');
   out.push(`<autoFilter ref="A1:${lastCol}${lastRow}"/>`);
   out.push(`<pageMargins left="0.5" right="0.5" top="0.75" bottom="0.75" header="0.3" footer="0.3"/>`);
+  if (hasDrawing) {
+    out.push(`<drawing r:id="rId1"/>`);
+  }
   out.push('</worksheet>');
   return out.join('');
+}
+
+function sheetDrawingRels(imageIndex: number): string {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing${imageIndex}.xml"/>
+</Relationships>`;
+}
+
+function drawingImageRels(imageIndex: number): string {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${imageIndex}.png"/>
+</Relationships>`;
+}
+
+function drawingImageXml(imageIndex: number, lastRow: number, image: ExcelImage): string {
+  const cx = Math.round(image.widthPx * 9525);
+  const cy = Math.round(image.heightPx * 9525);
+  const shapeId = imageIndex + 1;
+  const toRow = lastRow + Math.max(14, Math.round(image.heightPx / 18));
+  const toCol = Math.max(8, Math.round(image.widthPx / 64));
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <xdr:twoCellAnchor editAs="oneCell">
+    <xdr:from>
+      <xdr:col>0</xdr:col>
+      <xdr:colOff>0</xdr:colOff>
+      <xdr:row>${lastRow}</xdr:row>
+      <xdr:rowOff>0</xdr:rowOff>
+    </xdr:from>
+    <xdr:to>
+      <xdr:col>${toCol}</xdr:col>
+      <xdr:colOff>0</xdr:colOff>
+      <xdr:row>${toRow}</xdr:row>
+      <xdr:rowOff>0</xdr:rowOff>
+    </xdr:to>
+    <xdr:pic>
+      <xdr:nvPicPr>
+        <xdr:cNvPr id="${shapeId}" name="Picture ${imageIndex}" descr="Widget"/>
+        <xdr:cNvPicPr>
+          <a:picLocks noChangeAspect="1"/>
+        </xdr:cNvPicPr>
+      </xdr:nvPicPr>
+      <xdr:blipFill>
+        <a:blip r:embed="rId1" cstate="print"/>
+        <a:stretch>
+          <a:fillRect/>
+        </a:stretch>
+      </xdr:blipFill>
+      <xdr:spPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="${cx}" cy="${cy}"/>
+        </a:xfrm>
+        <a:prstGeom prst="rect">
+          <a:avLst/>
+        </a:prstGeom>
+      </xdr:spPr>
+    </xdr:pic>
+    <xdr:clientData/>
+  </xdr:twoCellAnchor>
+</xdr:wsDr>`;
 }
 
 function dataCell(ref: string, cell: ExcelCell, zebra: boolean): string {
@@ -227,6 +388,7 @@ export function columnLetter(index: number): string {
 
 function xml(value: string): string {
   return value
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')

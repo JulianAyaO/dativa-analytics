@@ -39,9 +39,16 @@
     <dtv-empty-state title="Sin actividad" description="Las operaciones relevantes aparecerán aquí." />
   </dtv-card>
 } @else {
-  <div class="dtv-activity__table dtv-fill">
+  <div class="dtv-activity__table">
     <table>
       <caption class="dtv-sr-only">Historial de actividad</caption>
+      <colgroup>
+        <col class="dtv-activity__col-date" />
+        <col class="dtv-activity__col-user" />
+        <col class="dtv-activity__col-action" />
+        <col class="dtv-activity__col-resource" />
+        <col />
+      </colgroup>
       <thead>
         <tr>
           <th scope="col">Fecha</th>
@@ -54,11 +61,15 @@
       <tbody>
         @for (event of events(); track event.id) {
           <tr>
-            <td>{{ event.createdAt | date: 'medium' }}</td>
-            <td>{{ event.actorName }}</td>
-            <td>{{ event.action }}</td>
-            <td>{{ event.resourceType }}</td>
-            <td>{{ event.summary }}</td>
+            <td class="dtv-activity__date">{{ event.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td class="dtv-activity__user">{{ event.actorName }}</td>
+            <td class="dtv-activity__action">{{ actionLabel(event.action) }}</td>
+            <td class="dtv-activity__resource">
+              <dtv-badge [tone]="resourceTone(event.resourceType)">
+                {{ resourceLabel(event.resourceType) }}
+              </dtv-badge>
+            </td>
+            <td class="dtv-activity__detail">{{ event.summary }}</td>
           </tr>
         }
       </tbody>

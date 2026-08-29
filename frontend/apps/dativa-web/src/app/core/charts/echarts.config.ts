@@ -4,6 +4,7 @@ import {
   DataZoomComponent,
   GridComponent,
   LegendComponent,
+  TitleComponent,
   TooltipComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -15,6 +16,7 @@ echarts.use([
   GridComponent,
   TooltipComponent,
   LegendComponent,
+  TitleComponent,
   DataZoomComponent,
   CanvasRenderer,
 ]);

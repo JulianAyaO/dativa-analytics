@@ -1,16 +1,17 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: var(--dtv-space-5);
+  gap: var(--dtv-space-4);
   width: 100%;
   min-height: 100%;
 }
 
 .dtv-activity__filters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: var(--dtv-space-4);
-  padding: var(--dtv-space-4) var(--dtv-space-5);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 16rem));
+  gap: var(--dtv-space-3);
+  align-items: end;
+  padding: var(--dtv-space-3) var(--dtv-space-4);
   border: 1px solid var(--dtv-color-border);
   border-radius: var(--dtv-radius-lg);
   background: var(--dtv-color-surface);
@@ -27,15 +28,34 @@
 
 table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
+}
+
+.dtv-activity__col-date {
+  width: 8.5rem;
+}
+
+.dtv-activity__col-user {
+  width: 8.5rem;
+}
+
+.dtv-activity__col-action {
+  width: 10.5rem;
+}
+
+.dtv-activity__col-resource {
+  width: 7.5rem;
 }
 
 th,
 td {
-  padding: var(--dtv-space-3) var(--dtv-space-4);
+  padding: 0.35rem 0.7rem;
   text-align: left;
   border-bottom: 1px solid var(--dtv-color-border);
   font-size: var(--dtv-type-sm);
+  line-height: 1.3;
+  vertical-align: middle;
 }
 
 th {
@@ -43,9 +63,14 @@ th {
   top: 0;
   background: var(--dtv-color-surface-muted);
   font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--dtv-color-text-muted);
 }
 
 tbody tr {
+  height: 2.15rem;
   transition: background-color var(--dtv-duration) var(--dtv-ease);
 }
 
@@ -53,12 +78,47 @@ tbody tr:hover {
   background: var(--dtv-color-surface-muted);
 }
 
-td:last-child {
+.dtv-activity__date,
+.dtv-activity__user,
+.dtv-activity__action {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dtv-activity__date {
+  font-variant-numeric: tabular-nums;
   color: var(--dtv-color-text-muted);
+  font-size: 0.75rem;
+}
+
+.dtv-activity__action {
+  font-weight: 600;
+}
+
+.dtv-activity__detail {
+  color: var(--dtv-color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dtv-activity__resource dtv-badge {
+  min-height: 1.25rem;
+  padding: 0 0.4rem;
+  font-size: 0.68rem;
 }
 
 @media (max-width: 720px) {
   .dtv-activity__filters {
     grid-template-columns: 1fr;
+  }
+
+  table {
+    table-layout: auto;
+  }
+
+  .dtv-activity__detail {
+    white-space: normal;
   }
 }

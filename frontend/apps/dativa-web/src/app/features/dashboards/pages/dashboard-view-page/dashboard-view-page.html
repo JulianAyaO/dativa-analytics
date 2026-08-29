@@ -39,6 +39,15 @@
         <button dtvButton variant="secondary" type="button" [loading]="exporting()" (click)="exportAnalysis()">
           Exportar datos
         </button>
+        <button
+          dtvButton
+          variant="secondary"
+          type="button"
+          [loading]="exportingDashboard()"
+          (click)="exportDashboard()"
+        >
+          Exportar dashboard
+        </button>
         @if (auth.canEdit()) {
           <button dtvButton type="button" (click)="openEditor()">Editar</button>
         }
