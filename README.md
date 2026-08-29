@@ -48,7 +48,7 @@ El frontend es el foco del proyecto: Angular 22 zoneless con Signals y un design
 | <p align="center"><img src="assets/editorDashboardAnalista.png" alt="Editor de dashboards" width="280"></p> | <p align="center"><img src="assets/exploradorDatosAnalista.png" alt="Explorador de datos" width="280"></p> | <p align="center"><img src="assets/importarDatosAnalista.png" alt="Wizard de importación" width="280"></p> |
 
 <p align="center">
-  <em>Pantallas que un reclutador suele revisar primero. El resto está en <a href="./assets/">assets/</a>.</em>
+  <em>Capturas de las pantallas principales. Las imágenes están en <a href="./assets/">assets/</a>.</em>
 </p>
 
 ## Tecnologías utilizadas
